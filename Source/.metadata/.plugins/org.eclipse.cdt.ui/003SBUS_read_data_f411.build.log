@@ -1,0 +1,17 @@
+17:05:33 **** Incremental Build of configuration Debug for project 003SBUS_read_data_f411 ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "003SBUS_read_data_f411.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\003SBUS_read_data_f411\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="003SBUS_read_data_f411.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 003SBUS_read_data_f411.elf
+ 
+arm-none-eabi-size   003SBUS_read_data_f411.elf 
+arm-none-eabi-objdump -h -S  003SBUS_read_data_f411.elf  > "003SBUS_read_data_f411.list"
+   text	   data	    bss	    dec	    hex	filename
+  10804	     20	   1668	  12492	   30cc	003SBUS_read_data_f411.elf
+Finished building: default.size.stdout
+ 
+Finished building: 003SBUS_read_data_f411.list
+ 
+
+17:05:34 Build Finished. 0 errors, 0 warnings. (took 492ms)
+
