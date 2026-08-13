@@ -22,3 +22,4 @@ status
 drone_armed
 motor_id
 motor_speed_percent
+htim1
