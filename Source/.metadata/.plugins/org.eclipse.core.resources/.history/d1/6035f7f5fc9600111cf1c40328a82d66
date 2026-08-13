@@ -216,7 +216,7 @@ int main(void)
 
 /*  static uint8_t arm_delay = 3;*/
 
-#ifdef ESC_C
+#ifdef ESC_CALIB
   motor_id = MOTOR_1;
   mprint("motor %d in calibration\n", (motor_id+1));
 #endif
