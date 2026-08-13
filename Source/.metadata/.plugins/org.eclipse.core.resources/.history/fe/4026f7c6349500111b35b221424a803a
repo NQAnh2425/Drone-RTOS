@@ -1,0 +1,35 @@
+/*
+ * Motor.c
+ *
+ *
+ *
+ */
+
+#include "Motor.h"
+
+Motor_status_t motor_set_speed_percent ( MOTOR_Handle_t *motor_handle ,uint8_t percent)
+{
+	uint16_t set_value = 0;
+
+	if(percent >= 100)
+	{
+
+		if(esc_set_channel(motor_handle->htim, motor_handle->tim_channel ,set_value) != ESC_OK)
+		return MOTOR_FAIL;
+	}
+	set_value = percent*10+1000;
+	if(esc_set_channel(motor_handle->htim, motor_handle->tim_channel ,set_value) != ESC_OK)
+	return MOTOR_FAIL;
+
+	return MOTOR_OK;
+}
+
+void motor_stop( MOTOR_Handle_t motor_handle)
+{
+	motor_stop(motor_handle->htim,motor_handle->tim_channel);
+}
+
+void motor_stop_all (MOTOR_Handle_t motor_handle)
+{
+	esc_stop_all(motor_handle->htim);
+}

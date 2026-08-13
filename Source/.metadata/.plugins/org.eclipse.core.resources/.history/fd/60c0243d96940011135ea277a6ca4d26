@@ -1,0 +1,124 @@
+/*
+ * MC7RE.c
+ *
+ *  Created on: Aug 1, 2026
+ *      Author: Admin
+ */
+
+#include "SBUS.h"
+
+
+static uint8_t header_pos;
+
+
+
+static int8_t SBUS_find_frame(uint8_t *buf);
+static bool SBUS_is_frame_lost( uint8_t *buf);
+static bool SBUS_is_failsafe( uint8_t *buf);
+
+
+
+// configure UART interrupt, data length = 25 bytes
+SBUS_status_t SBUS_init(UART_HandleTypeDef *huart, uint8_t* SBUS_data_raw)
+{
+	if (  HAL_UARTEx_ReceiveToIdle_DMA(huart, SBUS_data_raw, sizeof(SBUS_data_raw)) != HAL_OK)
+	{
+		return SBUS_INIT_FAIL;
+	}
+	return SBUS_OK;
+}
+
+
+void SBUS_decode(uint8_t *buf, uint16_t *ch)
+{
+    ch[0]  = ((buf[(header_pos+1) % SBUS_FRAME_LEN]  | buf[(header_pos+2) % SBUS_FRAME_LEN] << 8)                                              & 0x07FF);
+    ch[1]  = ((buf[(header_pos+2) % SBUS_FRAME_LEN] >> 3 | buf[(header_pos+3) % SBUS_FRAME_LEN] << 5)                                           & 0x07FF);
+    ch[2]  = ((buf[(header_pos+3) % SBUS_FRAME_LEN] >> 6 | buf[(header_pos+4) % SBUS_FRAME_LEN] << 2 | buf[(header_pos+5) % SBUS_FRAME_LEN] << 10) & 0x07FF);
+    ch[3]  = ((buf[(header_pos+5) % SBUS_FRAME_LEN] >> 1 | buf[(header_pos+6) % SBUS_FRAME_LEN] << 7)                                           & 0x07FF);
+    ch[4]  = ((buf[(header_pos+6) % SBUS_FRAME_LEN] >> 4 | buf[(header_pos+7) % SBUS_FRAME_LEN] << 4)                                           & 0x07FF);
+    ch[5]  = ((buf[(header_pos+7) % SBUS_FRAME_LEN] >> 7 | buf[(header_pos+8) % SBUS_FRAME_LEN] << 1 | buf[(header_pos+9) % SBUS_FRAME_LEN] << 9)  & 0x07FF);
+    ch[6]  = ((buf[(header_pos+9) % SBUS_FRAME_LEN] >> 2 | buf[(header_pos+10) % SBUS_FRAME_LEN] << 6)                                          & 0x07FF);
+    ch[7]  = ((buf[(header_pos+10) % SBUS_FRAME_LEN] >> 5 | buf[(header_pos+11) % SBUS_FRAME_LEN] << 3)                                         & 0x07FF);
+
+    ch[8]  = ((buf[(header_pos+12) % SBUS_FRAME_LEN] | buf[(header_pos+13) % SBUS_FRAME_LEN] << 8)                                              & 0x07FF);
+    ch[9]  = ((buf[(header_pos+13) % SBUS_FRAME_LEN] >> 3 | buf[(header_pos+14) % SBUS_FRAME_LEN] << 5)                                         & 0x07FF);
+    ch[10] = ((buf[(header_pos+14) % SBUS_FRAME_LEN] >> 6 | buf[(header_pos+15) % SBUS_FRAME_LEN] << 2 | buf[(header_pos+16) % SBUS_FRAME_LEN] << 10) & 0x07FF);
+    ch[11] = ((buf[(header_pos+16) % SBUS_FRAME_LEN] >> 1 | buf[(header_pos+17) % SBUS_FRAME_LEN] << 7)                                         & 0x07FF);
+    ch[12] = ((buf[(header_pos+17) % SBUS_FRAME_LEN] >> 4 | buf[(header_pos+18) % SBUS_FRAME_LEN] << 4)                                         & 0x07FF);
+    ch[13] = ((buf[(header_pos+18) % SBUS_FRAME_LEN] >> 7 | buf[(header_pos+19) % SBUS_FRAME_LEN] << 1 | buf[(header_pos+20) % SBUS_FRAME_LEN] << 9) & 0x07FF);
+    ch[14] = ((buf[(header_pos+20) % SBUS_FRAME_LEN] >> 2 | buf[(header_pos+21) % SBUS_FRAME_LEN] << 6)                                         & 0x07FF);
+    ch[15] = ((buf[(header_pos+21) % SBUS_FRAME_LEN] >> 5 | buf[(header_pos+22) % SBUS_FRAME_LEN] << 3)                                         & 0x07FF);
+}
+
+
+static int8_t SBUS_find_frame(uint8_t *buf)
+{
+    for(uint16_t i = 0; i < SBUS_FRAME_LEN; i++)
+    {
+        if(buf[i] != 0x0F)
+        	continue;
+
+        if(buf[(i + 24)%SBUS_FRAME_LEN] != 0x00)
+            continue;
+        header_pos = i;
+        return i;
+    }
+
+    return -1;
+}
+
+
+static bool SBUS_is_frame_lost( uint8_t *buf)
+{
+    return (buf[(header_pos + 23)%SBUS_FRAME_LEN] & (1 << 2)) != 0;
+}
+
+static bool SBUS_is_failsafe( uint8_t *buf)
+{
+    return ((buf[(header_pos + 23)%SBUS_FRAME_LEN] & (1 << 3)) || \
+    		(buf[(header_pos + 23)%SBUS_FRAME_LEN] & (1 << 4)))!= 0;
+}
+
+
+SBUS_status_t SBUS_check_frame( uint8_t *buf)
+{
+	if(SBUS_find_frame(buf) == -1)
+		return SBUS_FRAME_NOTFOND;
+	if (SBUS_is_frame_lost(buf))
+		return SBUS_ERR_FRAME_LOST;
+	if (SBUS_is_failsafe(buf))
+		return SBUS_ERR_FAILSAFE;
+    return SBUS_OK;
+}
+
+
+
+uint16_t SBUS_get_channel(uint8_t ch,uint16_t *channel)
+{
+    if (channel == NULL)
+    {
+        return 0;
+    }
+
+    if (ch >= SBUS_CHANNEL_NUM)
+    {
+        return 0;
+    }
+
+    return channel[ch];
+}
+
+
+void SBUS_clear_old_data(uint8_t *SBUS_data_rx)
+{
+	for(uint8_t i = 0; i<= 24; i++)
+	{
+		SBUS_data_rx[i] = 0;
+	}
+}
+
+
+
+
+
+

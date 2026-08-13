@@ -1,0 +1,54 @@
+10:02:13 **** Build of configuration Debug for project 007EstimateAngle-Kalmanfilter ****
+make -j16 all 
+arm-none-eabi-gcc "../MPU6050Lib/MPU6050.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/007EstimateAngle-Kalmanfilter/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/007EstimateAngle-Kalmanfilter/MPU6050Lib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"MPU6050Lib/MPU6050.d" -MT"MPU6050Lib/MPU6050.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "MPU6050Lib/MPU6050.o"
+../MPU6050Lib/MPU6050.c:175:8: warning: return type defaults to 'int' [-Wimplicit-int]
+  175 | static get_interrupt_status (I2C_HandleTypeDef *hi2c)
+      |        ^~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:180:8: warning: return type defaults to 'int' [-Wimplicit-int]
+  180 | static get_interrupt_setting (I2C_HandleTypeDef *hi2c)
+      |        ^~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c: In function 'mpu6050_interrupt_handle':
+../MPU6050Lib/MPU6050.c:190:9: error: too many arguments to function 'get_interrupt_setting'
+  190 |         get_interrupt_setting(hi2c,& int_status);
+      |         ^~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:180:8: note: declared here
+  180 | static get_interrupt_setting (I2C_HandleTypeDef *hi2c)
+      |        ^~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:191:9: error: too many arguments to function 'get_interrupt_status'
+  191 |         get_interrupt_status(hi2c, &int_settings);
+      |         ^~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:175:8: note: declared here
+  175 | static get_interrupt_status (I2C_HandleTypeDef *hi2c)
+      |        ^~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:195:17: warning: implicit declaration of function 'mpu6050_motion_detection_callback' [-Wimplicit-function-declaration]
+  195 |                 mpu6050_motion_detection_callback();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:199:17: warning: implicit declaration of function 'mpu6050_raw_data_ready_callback' [-Wimplicit-function-declaration]
+  199 |                 mpu6050_raw_data_ready_callback();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c: At top level:
+../MPU6050Lib/MPU6050.c:205:6: warning: conflicting types for 'mpu6050_motion_detection_callback'; have 'void()'
+  205 | void mpu6050_motion_detection_callback();
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:195:17: note: previous implicit declaration of 'mpu6050_motion_detection_callback' with type 'void()'
+  195 |                 mpu6050_motion_detection_callback();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:206:6: warning: conflicting types for 'mpu6050_raw_data_ready_callback'; have 'void()'
+  206 | void mpu6050_raw_data_ready_callback();
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c:199:17: note: previous implicit declaration of 'mpu6050_raw_data_ready_callback' with type 'void()'
+  199 |                 mpu6050_raw_data_ready_callback();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../MPU6050Lib/MPU6050.c: In function 'get_interrupt_status':
+../MPU6050Lib/MPU6050.c:178:17: warning: control reaches end of non-void function [-Wreturn-type]
+  178 |                 }
+      |                 ^
+../MPU6050Lib/MPU6050.c: In function 'get_interrupt_setting':
+../MPU6050Lib/MPU6050.c:183:17: warning: control reaches end of non-void function [-Wreturn-type]
+  183 |                 }
+      |                 ^
+make: *** [MPU6050Lib/subdir.mk:19: MPU6050Lib/MPU6050.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+
+10:02:14 Build Failed. 3 errors, 8 warnings. (took 287ms)
+

@@ -1,0 +1,35 @@
+/*
+ * ESC.h
+ *
+ *  Created on: Aug 6, 2026
+ *      Author: Admin
+ */
+
+#ifndef ESC_H_
+#define ESC_H_
+
+#include "main.h"
+
+typedef enum
+{
+	ESC_OK,
+	ESC_FAIL,
+}esc_status_t;
+
+#define	ESC_OFFSET_CHANNEL_1	0
+#define	ESC_OFFSET_CHANNEL_2	0
+#define	ESC_OFFSET_CHANNEL_3	0
+#define	ESC_OFFSET_CHANNEL_4	-30
+
+#define ESC_MAX_THRUST			1560
+#define ESC_MIN_THRUST			1100
+
+esc_status_t esc_init(TIM_HandleTypeDef *htim);
+
+esc_status_t esc_stop_channel(TIM_HandleTypeDef *htim, uint32_t channel);
+esc_status_t esc_stop_all(TIM_HandleTypeDef *htim);
+
+esc_status_t esc_set_channel(TIM_HandleTypeDef *htim, uint32_t tim_channel , uint16_t set_value);
+esc_status_t esc_set_all(TIM_HandleTypeDef *htim, uint16_t set_value);
+
+#endif /* ESC_H_ */

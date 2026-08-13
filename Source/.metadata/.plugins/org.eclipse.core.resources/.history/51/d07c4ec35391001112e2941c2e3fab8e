@@ -1,0 +1,265 @@
+/*
+ * MPU6050.c
+ *
+ *  Created on: Jul 31, 2026
+ *      Author: Admin
+ */
+
+#include "MPU6050.h"
+
+static uint8_t mpu6050_i2c_addr;
+static float	mpu6050_offset[3] = {0.0f};
+
+mpu6050_status_t mpu6050_read_byte(I2C_HandleTypeDef *hi2c,uint8_t mpu_i2c_addr, uint8_t reg_addr, uint8_t *data)
+{
+	HAL_StatusTypeDef status = \
+			HAL_I2C_Mem_Read(hi2c, mpu6050_i2c_addr, reg_addr, 1, data, 1, I2C_TIMEOUT);
+
+	return (status == HAL_OK) ? MPU6050_OK:MPU6050_ERR;
+}
+
+
+
+
+mpu6050_status_t mpu6050_read(I2C_HandleTypeDef *hi2c,uint8_t mpu_i2c_addr, uint8_t reg_base_addr, uint8_t *buffer, uint32_t nbytes)
+{
+	HAL_StatusTypeDef status = \
+			HAL_I2C_Mem_Read(hi2c, mpu6050_i2c_addr , reg_base_addr, 1 , buffer , nbytes , I2C_TIMEOUT);
+
+	return (status == HAL_OK) ? MPU6050_OK:MPU6050_ERR;
+}
+
+
+
+
+mpu6050_status_t mpu6050_write_byte(I2C_HandleTypeDef *hi2c,uint8_t mpu_i2c_addr, uint8_t reg_addr, uint8_t *data)
+{
+	HAL_StatusTypeDef status = \
+			HAL_I2C_Mem_Write(hi2c, mpu6050_i2c_addr, reg_addr, 1,data, 1, I2C_TIMEOUT);
+
+	return (status == HAL_OK) ? MPU6050_OK:MPU6050_ERR;
+}
+
+
+
+
+mpu6050_status_t mpu6050_init(I2C_HandleTypeDef *hi2c,uint8_t mpu_i2c_addr)
+{
+
+
+	mpu6050_i2c_addr = mpu_i2c_addr;
+
+	uint8_t data_read = 0;
+	if(mpu6050_read_byte(hi2c, mpu_i2c_addr, WHO_I_AM, &data_read) != MPU6050_OK)
+	{
+		return MPU6050_ERR;
+	}
+
+	if((data_read == 0x68) || (data_read == 0x69) || (data_read == 0x70) || (data_read == 0x98))
+	{
+		printf("ok");
+	}
+	else
+	{
+		return MPU6050_ERR;
+	}
+
+	// sleep mode turn off
+
+	uint8_t data_write = 0x00;
+	if(mpu6050_write_byte(hi2c, mpu_i2c_addr , PWMGMT_1, &data_write) != MPU6050_OK)
+	{
+		return MPU6050_ERR;
+	}
+
+	// configure sample rate 1000/(1+SMPRT_DIV) hz, scale accelerometer ±2g 16384LSB/g , gyroscope ±250 131LSB/(degree/s)
+	data_write = 0x01;
+	if(mpu6050_write_byte(hi2c, mpu_i2c_addr , DLPF_CFG, &data_write) != MPU6050_OK)
+	{
+		return MPU6050_ERR;
+	}
+
+	data_write = 0x03;
+	if(mpu6050_write_byte(hi2c, mpu_i2c_addr , SMPRT_DIV, &data_write) != MPU6050_OK)
+	{
+		return MPU6050_ERR;
+	}
+
+	data_write = 0;
+	if(mpu6050_write_byte(hi2c, mpu_i2c_addr , GYRO_CONFIG , &data_write) != MPU6050_OK)
+	{
+		return MPU6050_ERR;
+	}
+
+	if(mpu6050_write_byte(hi2c, mpu_i2c_addr , ACCEL_CONFIG , &data_write) != MPU6050_OK)
+	{
+		return MPU6050_ERR;
+	}
+
+	return MPU6050_OK;
+
+}
+
+
+
+
+
+mpu6050_status_t mpu6050_read_data(I2C_HandleTypeDef *hi2c,uint8_t mpu_i2c_addr, mpu6050_data *mpu6050_data)
+{
+	uint8_t raw_data[6] = {0};
+
+	mpu6050_status_t status = mpu6050_read(hi2c, mpu_i2c_addr, ACCEL_XOUT_H, raw_data, 6);
+	if(status != MPU6050_OK)
+	{
+		return status;
+	}
+
+	mpu6050_data->acel_x = ((uint16_t)raw_data[0]<<8)|raw_data[1];
+	mpu6050_data->acel_y = ((uint16_t)raw_data[2]<<8)|raw_data[3];
+	mpu6050_data->acel_z = ((uint16_t)raw_data[4]<<8)|raw_data[5];
+
+	status = mpu6050_read(hi2c, mpu_i2c_addr, GYRO_XOUT_H, raw_data, 6);
+	if(status != MPU6050_OK)
+	{
+		return status;
+	}
+
+	mpu6050_data->gyro_x = ((uint16_t)raw_data[0]<<8)|raw_data[1];
+	mpu6050_data->gyro_y = ((uint16_t)raw_data[2]<<8)|raw_data[3];
+	mpu6050_data->gyro_z = ((uint16_t)raw_data[4]<<8)|raw_data[5];
+
+	return status;
+}
+
+
+
+void mpu6050_read_gyro(uint8_t *raw_data, float *gyro_data)
+{
+	uint8_t data_gyro[6] = {0};
+	gx = ((int16_t)(data_gyro[0]) << 8) | data_gyro[1];
+	gy = ((int16_t)(data_gyro[2]) << 8) | data_gyro[3];
+	gz = ((int16_t)(data_gyro[4]) << 8) | data_gyro[5];
+
+	Gx = ((float)gx) / 131.0 - mpu6050_offset[0];
+	Gy = ((float)gy) / 131.0 - mpu6050_offset[1];
+	Gz = ((float)gz) / 131.0 - mpu6050_offset[2];
+}
+
+
+void mpu6050_read_accel(uint8_t *rawd_data)
+{
+	uint8_t data_accel[6] = {0};
+
+	ax = ((int16_t)(data_accel[0]) << 8) | data_accel[1];
+	ay = ((int16_t)(data_accel[2]) << 8) | data_accel[3];
+	az = ((int16_t)(data_accel[4]) << 8) | data_accel[5];
+
+	Ax = ((float)ax) / 16384.0;
+	Ay = ((float)ay) / 16384.0;
+	Az = ((float)az) / 16384.0;
+
+
+}
+
+
+
+mpu6050_status_t mpu6050_interrupt_config(I2C_HandleTypeDef *hi2c, uint8_t mpu_i2c_addr ,mpu6050_interrupt_config_t level)
+{
+	uint8_t int_cfg = 0;
+	if(mpu6050_read_byte(hi2c, mpu_i2c_addr, INT_PIN_CFG, &int_cfg) != MPU6050_OK)
+	{
+		return MPU6050_ERR;
+	}
+
+	int_cfg &= ~0x08;
+	int_cfg |= level;
+
+	return mpu6050_write_byte(hi2c, mpu_i2c_addr, INT_PIN_CFG, &int_cfg );
+}
+
+
+
+mpu6050_status_t mpu6050_enable_interrupt(I2C_HandleTypeDef *hi2c,uint8_t mpu_i2c_addr, mpu6050_interrupt_t interrupt)
+{
+    uint8_t current_int_settings = 0;
+
+    if (mpu6050_read_byte(hi2c, mpu_i2c_addr , REG_INT_EN, &current_int_settings) != MPU6050_OK)
+    {
+        return MPU6050_ERR;
+    }
+
+    current_int_settings |= (uint8_t)interrupt;
+
+    return mpu6050_write_byte(hi2c, mpu_i2c_addr , REG_INT_EN, &current_int_settings);
+}
+
+
+
+mpu6050_status_t mpu6050_disable_interrupt(I2C_HandleTypeDef *hi2c, uint8_t mpu_i2c_addr , mpu6050_interrupt_t interrupt)
+{
+    uint8_t current_int_settings = 0;
+
+    if (interrupt != (uint8_t)ALL_INT)
+    {
+        mpu6050_read_byte(hi2c, mpu_i2c_addr, REG_INT_EN, &current_int_settings);
+    }
+
+    current_int_settings &= ~interrupt;
+
+    return mpu6050_write_byte(hi2c, mpu_i2c_addr, REG_INT_EN,&current_int_settings);
+}
+
+
+
+static mpu6050_status_t get_interrupt_status (I2C_HandleTypeDef *hi2c, uint8_t *data)
+		{
+	return mpu6050_read_byte(hi2c, MPU6050_ADDR, REG_INT_STATUS, data);
+		}
+
+static mpu6050_status_t get_interrupt_setting (I2C_HandleTypeDef *hi2c, uint8_t *data)
+		{
+	return mpu6050_read_byte(hi2c, MPU6050_ADDR, REG_INT_EN, data);
+		}
+
+void mpu6050_interrupt_handle(I2C_HandleTypeDef *hi2c)
+{
+	uint8_t int_status;
+	uint8_t int_settings;
+
+	get_interrupt_setting(hi2c,& int_status);
+	get_interrupt_status(hi2c, &int_settings);
+
+	if((int_settings & MOT_INT)&&(int_status & MOT_INT))
+	{
+		mpu6050_motion_detection_callback();
+	}
+	else if((int_settings & RAW_RDY_INT)&&(int_status & RAW_RDY_INT))
+	{
+		mpu6050_raw_data_ready_callback();
+	}
+}
+
+
+
+__weak void mpu6050_motion_detection_callback();
+__weak void mpu6050_raw_data_ready_callback();
+
+
+
+
+
+#ifdef MPU6050_CALIBRATE
+void mpu6050_calibrate(uint32_t *raw_gyroscope_data)
+{
+	mpu6050_offset[0] = ((float)raw_gyroscope_data[0]/131.0f);
+	mpu6050_offset[1] = ((float)raw_gyroscope_data[1]/131.0f);
+	mpu6050_offset[2] = ((float)raw_gyroscope_data[2]/131.0f);
+}
+
+#endif
+
+
+
+
+
+

@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=GND Pin=U3-30
+Removed Pin From Net: NetName=GND Pin=U3-60
+Added Member To Class: ClassName=Quadcopter Member=Component RF1 MC7RE
+Added Member To Class: ClassName=Quadcopter Member=Component U4 OC09600

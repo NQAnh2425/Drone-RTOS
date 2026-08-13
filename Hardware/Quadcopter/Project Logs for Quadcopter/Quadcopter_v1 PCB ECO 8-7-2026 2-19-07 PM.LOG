@@ -1,0 +1,5 @@
+Added Component: Designator=J?(FEMALE JUMP 1X3)
+Added Pin To Net: NetName=UART3_RX Pin=J?-1
+Added Pin To Net: NetName=UART3_TX Pin=J?-2
+Added Pin To Net: NetName=GND Pin=J?-3
+Added Member To Class: ClassName=Quadcopter Member=Component J? Jump female 1x3

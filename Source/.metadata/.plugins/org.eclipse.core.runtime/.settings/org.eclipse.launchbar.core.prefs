@@ -1,7 +1,13 @@
 LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
 LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
 LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
-configDescList=org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001MPU6050 Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:002ESC_Test Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:003SBUS_read_data_f411 Debug
+configDescList=org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:002ESC_Test Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:003SBUS_read_data_f411 Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:004HMC5883L Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:006MPU_Interrupt Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:007EstimateAngle-Kalmanfilter Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:008QMC5883L Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001MPU6050 Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UART_DMA Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:010Final Debug
 eclipse.preferences.version=1
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001MPU6050\ Debug/activeLaunchMode=debug
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001MPU6050\ Debug/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:003SBUS_read_data_f411\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:006MPU_Interrupt\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:007EstimateAngle-Kalmanfilter\ Debug/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:008HMC5883L\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:010Final\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UART_DMA\ Debug/activeLaunchMode=debug

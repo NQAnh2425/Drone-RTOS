@@ -1,0 +1,25 @@
+/*
+ * app_callback.c
+ *
+ *  Created on: Aug 6, 2026
+ *      Author: Admin
+ */
+
+
+#include "main.h"
+
+extern UART_HandleTypeDef huart1;
+extern uint8_t receive_flag;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->Instance == USART1)
+	{
+		receive_flag = 1;
+		HAL_UARTEx_ReceiveToIdle_DMA(huart1, SBUS_data_raw, sizeof(SBUS_data_raw);
+	}
+	else
+	{
+		HAL_UARTEx_ReceiveToIdle_DMA(huart1, SBUS_data_raw, sizeof(SBUS_data_raw);
+	}
+}

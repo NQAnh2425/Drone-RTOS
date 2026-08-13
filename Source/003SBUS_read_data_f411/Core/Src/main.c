@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "SBUS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,27 +53,6 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
-
-void SBUS_Decode(uint8_t *buf, uint16_t *ch)
-{
-    ch[0]  = ((buf[1]      | buf[2]  << 8)                         & 0x07FF);
-    ch[1]  = ((buf[2] >> 3 | buf[3]  << 5)                         & 0x07FF);
-    ch[2]  = ((buf[3] >> 6 | buf[4]  << 2 | buf[5]  << 10)         & 0x07FF);
-    ch[3]  = ((buf[5] >> 1 | buf[6]  << 7)                         & 0x07FF);
-    ch[4]  = ((buf[6] >> 4 | buf[7]  << 4)                         & 0x07FF);
-    ch[5]  = ((buf[7] >> 7 | buf[8]  << 1 | buf[9]  << 9)          & 0x07FF);
-    ch[6]  = ((buf[9] >> 2 | buf[10] << 6)                         & 0x07FF);
-    ch[7]  = ((buf[10]>>5 | buf[11] <<3)                           & 0x07FF);
-
-    ch[8]  = ((buf[12]     | buf[13] <<8)                          & 0x07FF);
-    ch[9]  = ((buf[13]>>3  | buf[14] <<5)                          & 0x07FF);
-    ch[10] = ((buf[14]>>6  | buf[15] <<2 | buf[16]<<10)            & 0x07FF);
-    ch[11] = ((buf[16]>>1  | buf[17] <<7)                          & 0x07FF);
-    ch[12] = ((buf[17]>>4  | buf[18] <<4)                          & 0x07FF);
-    ch[13] = ((buf[18]>>7  | buf[19] <<1 | buf[20]<<9)             & 0x07FF);
-    ch[14] = ((buf[20]>>2  | buf[21] <<6)                          & 0x07FF);
-    ch[15] = ((buf[21]>>5  | buf[22] <<3)                          & 0x07FF);
-}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -112,17 +91,14 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  data_tx = 0xAA;
 
-	HAL_UART_Receive_IT(&huart2, sbusRx, 25);
+  SBUS_Init(&huart2, sbusRx);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_UART_Transmit(&huart2, &data_tx, 1, HAL_MAX_DELAY);
-	  HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 

@@ -1,0 +1,32 @@
+/*
+ * Motor.c
+ *
+ * Contains motor driver definication function prototypes
+ *
+ */
+
+#include "Motor.h"
+
+Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed)
+{
+	uint16_t set_value = 0;
+	set_value = percent*10+1000;
+	if(esc_set_channel((TIM_HandleTypeDef*)motor_handle->htim, (uint32_t)motor_handle->tim_channel ,set_value) != ESC_OK)
+	return MOTOR_FAIL;
+
+	return MOTOR_OK;
+}
+
+Motor_status_t motor_stop( MOTOR_Handle_t *motor_handle)
+{
+	if(esc_stop_channel((TIM_HandleTypeDef*)motor_handle->htim,(uint32_t)motor_handle->tim_channel) != ESC_OK)
+		return MOTOR_FAIL;
+	return MOTOR_OK;
+}
+
+Motor_status_t motor_stop_all (MOTOR_Handle_t *motor_handle)
+{
+	if(esc_stop_all((TIM_HandleTypeDef*)motor_handle->htim) != ESC_OK)
+	return MOTOR_FAIL;
+return MOTOR_OK;
+}

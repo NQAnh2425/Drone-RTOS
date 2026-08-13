@@ -1,0 +1,16 @@
+/*
+ * drone.c
+ *
+ *
+ *Contains drone driver definication functions
+ *
+ */
+
+#include "drone.h"
+
+
+
+void drone_init(void)
+{
+
+}

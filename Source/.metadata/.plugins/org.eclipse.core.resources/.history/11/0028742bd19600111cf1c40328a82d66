@@ -1,0 +1,45 @@
+/*
+ * Motor.c
+ *
+ * Contains motor driver definication function prototypes
+ *
+ */
+
+#include "Motor.h"
+
+  void motor_init(MOTOR_Handle_t *motor_handle, TIM_HandleTypeDef *htim)
+  {
+	  for(uint8_t i = 0; i <= 3 ; i++)
+	  {
+		  motor_handle[i].htim = &htim1;
+		  motor_handle[i].motorid = i+1;
+		  motor_handle[i].speed_percent = 0;
+	  }
+	  motor_handle[0].tim_channel = TIM_CHANNEL_1;
+	  motor_handle[1].tim_channel = TIM_CHANNEL_2;
+	  motor_handle[2].tim_channel = TIM_CHANNEL_3;
+	  motor_handle[3].tim_channel = TIM_CHANNEL_4;
+  }
+
+Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed)
+{
+	uint16_t set_value = motor_speed + 1000;
+	if(esc_set_channel((TIM_HandleTypeDef*)motor_handle->htim, (uint32_t)motor_handle->tim_channel ,set_value) != ESC_OK)
+	return MOTOR_FAIL;
+
+	return MOTOR_OK;
+}
+
+Motor_status_t motor_stop( MOTOR_Handle_t *motor_handle)
+{
+	if(esc_stop_channel((TIM_HandleTypeDef*)motor_handle->htim,(uint32_t)motor_handle->tim_channel) != ESC_OK)
+		return MOTOR_FAIL;
+	return MOTOR_OK;
+}
+
+Motor_status_t motor_stop_all (MOTOR_Handle_t *motor_handle)
+{
+	if(esc_stop_all((TIM_HandleTypeDef*)motor_handle->htim) != ESC_OK)
+	return MOTOR_FAIL;
+return MOTOR_OK;
+}

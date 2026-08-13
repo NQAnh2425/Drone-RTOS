@@ -1,0 +1,52 @@
+/*
+ * MC7RE.h
+ *
+ *  Created on: Aug 1, 2026
+ *      Author: Admin
+ */
+
+#ifndef SBUS_H_
+#define SBUS_H_
+
+#include "main.h"
+#include "stdint.h"
+#include "stdbool.h"
+
+
+#define SBUS_FRAME_LEN			((uint16_t) 25)
+#define SBUS_CHANNEL_NUM    	16
+
+
+
+typedef enum
+{
+    SBUS_OK = 0,
+	SBUS_INIT_FAIL,
+	SBUS_FRAME_NOTFOND,
+    SBUS_ERR_FRAME_LOST,
+    SBUS_ERR_FAILSAFE,
+} SBUS_status_t;
+
+
+
+SBUS_status_t SBUS_init(UART_HandleTypeDef *huart, uint8_t* SBUS_data_raw);
+SBUS_status_t SBUS_rx_callback(uint8_t *SBUS_data_raw);
+
+void SBUS_Decode(uint8_t *buf, uint16_t *ch);
+
+int8_t SBUS_FindFrame(uint8_t *buf);
+bool SBUS_IsFrameLost( uint8_t *buf);
+bool SBUS_IsFailsafe( uint8_t *buf);
+SBUS_status_t SBUS_CheckFrame( uint8_t *buf);
+
+uint16_t SBUS_GetChannel(uint8_t ch, uint16_t *channel);
+SBUS_status_t SBUS_CheckFrame( uint8_t *buf);
+
+
+void SBUS_clear_old_data(uint8_t *SBUS_data_rx);
+
+
+
+
+
+#endif /* SBUS_H_ */

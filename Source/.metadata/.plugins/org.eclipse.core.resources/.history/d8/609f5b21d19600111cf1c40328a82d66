@@ -1,0 +1,45 @@
+/*
+ * Motor.h
+ *
+ *  Created on: Aug 11, 2026
+ *      Author: Admin
+ */
+
+#ifndef MOTOR_H_
+#define MOTOR_H_
+
+#include "ESC.h"
+
+typedef enum
+{
+	MOTOR_1,
+	MOTOR_2,
+	MOTOR_3,
+	MOTOR_4,
+}Motor_ID_t;
+
+typedef enum
+{
+	MOTOR_OK,
+	MOTOR_FAIL,
+}Motor_status_t;
+
+
+
+typedef struct
+{
+	Motor_ID_t motorid;
+	uint32_t   tim_channel;
+	TIM_HandleTypeDef *htim;
+	uint8_t			speed_percent;
+}MOTOR_Handle_t;
+
+
+Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed);
+
+Motor_status_t motor_stop( MOTOR_Handle_t *motor_handle);
+
+Motor_status_t motor_stop_all (MOTOR_Handle_t *motor_handle);
+
+
+#endif /* MOTOR_H_ */

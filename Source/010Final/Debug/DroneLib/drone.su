@@ -1,0 +1,3 @@
+../DroneLib/drone.c:13:11:drone_init	24	static
+../DroneLib/drone.c:29:8:drone_config	16	static,ignoring_inline_asm
+../DroneLib/drone.c:51:6:drone_soft_start	4	static

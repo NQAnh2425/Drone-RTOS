@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "math.h"
 
 /* USER CODE END Includes */
 
@@ -31,7 +32,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define HMC5883L_ADDR     0x1B
 
+#define REG_CONFIG_A      0x00
+#define REG_CONFIG_B      0x01
+#define REG_MODE          0x02
+#define REG_DATA          0x03
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -40,6 +46,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 
@@ -47,13 +54,104 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
+
+
+void HMC5883L_Init(void)
+{
+    uint8_t data;
+
+    // Config A
+    // 8 samples, 15Hz, Normal measurement
+    data = 0x70;
+    HAL_I2C_Mem_Write(&hi2c1,
+                      HMC5883L_ADDR,
+                      REG_CONFIG_A,
+                      I2C_MEMADD_SIZE_8BIT,
+                      &data,
+                      1,
+                      HAL_MAX_DELAY);
+
+    // Config B
+    // Gain = ±1.3 Ga
+    data = 0x20;
+    HAL_I2C_Mem_Write(&hi2c1,
+                      HMC5883L_ADDR,
+                      REG_CONFIG_B,
+                      I2C_MEMADD_SIZE_8BIT,
+                      &data,
+                      1,
+                      HAL_MAX_DELAY);
+
+    // Continuous measurement mode
+    data = 0x00;
+    HAL_I2C_Mem_Write(&hi2c1,
+                      HMC5883L_ADDR,
+                      REG_MODE,
+                      I2C_MEMADD_SIZE_8BIT,
+                      &data,
+                      1,
+                      HAL_MAX_DELAY);
+}
+
+typedef struct
+{
+    int16_t X;
+    int16_t Y;
+    int16_t Z;
+} HMC5883L_Data_t;
+
+
+float HMC5883L_GetHeading(HMC5883L_Data_t *mag)
+{
+    float heading;
+
+    heading = atan2f((float)mag->Y,
+                     (float)mag->X);
+
+    heading *= 180.0f / (float)M_PI;
+
+    if(heading < 0)
+        heading += 360.0f;
+
+    return heading;
+}
+
+
+HAL_StatusTypeDef HMC5883L_Read(HMC5883L_Data_t *mag)
+{
+    uint8_t buffer[6];
+
+    if(HAL_I2C_Mem_Read(&hi2c1,
+                        HMC5883L_ADDR,
+                        REG_DATA,
+                        I2C_MEMADD_SIZE_8BIT,
+                        buffer,
+                        6,
+                        100) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    mag->X = (int16_t)((buffer[0] << 8) | buffer[1]);
+    mag->Z = (int16_t)((buffer[2] << 8) | buffer[3]);
+    mag->Y = (int16_t)((buffer[4] << 8) | buffer[5]);
+
+    return HAL_OK;
+}
+
+HMC5883L_Data_t mag;
+float heading;
+
+
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t addr[127] = {0};
 /* USER CODE END 0 */
 
 /**
@@ -83,14 +181,19 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  HMC5883L_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HMC5883L_Read(&mag);
+
+	    HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -118,7 +221,12 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 100;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -128,15 +236,67 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */

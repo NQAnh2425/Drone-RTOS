@@ -1,0 +1,10 @@
+10:31:35 **** Incremental Build of configuration Debug for project 008HMC5883L ****
+make -j16 all 
+arm-none-eabi-size   008HMC5883L.elf 
+   text	   data	    bss	    dec	    hex	filename
+  13312	     20	   1660	  14992	   3a90	008HMC5883L.elf
+Finished building: default.size.stdout
+ 
+
+10:31:36 Build Finished. 0 errors, 0 warnings. (took 189ms)
+

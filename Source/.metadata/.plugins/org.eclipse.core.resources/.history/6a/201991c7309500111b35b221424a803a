@@ -1,0 +1,20 @@
+/*
+ * Motor.c
+ *
+ *
+ *
+ */
+
+#include "Motor.h"
+
+void motor_set_speed_percent ( MOTOR_Handle_t *motor_handle ,uint8_t percent)
+{
+	if(percent >= 100)
+	{
+
+		esc_set_channel(motor_handle->htim, motor_handle->tim_channel ,set_value);
+		return;
+	}
+	set_value = percent*10+1000;
+	esc_set_channel(motor_handle->htim, motor_handle->tim_channel ,set_value);
+}

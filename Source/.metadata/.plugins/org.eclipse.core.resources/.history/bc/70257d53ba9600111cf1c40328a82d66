@@ -1,0 +1,27 @@
+/*
+ * ESC.h
+ *
+ *  Created on: Aug 6, 2026
+ *      Author: Admin
+ */
+
+#ifndef ESC_H_
+#define ESC_H_
+
+#include "main.h"
+
+typedef enum
+{
+	ESC_OK,
+	ESC_FAIL,
+}esc_status_t;
+
+esc_status_t esc_init(TIM_HandleTypeDef *htim);
+
+esc_status_t esc_stop_channel(TIM_HandleTypeDef *htim, uint32_t channel);
+esc_status_t esc_stop_all(TIM_HandleTypeDef *htim);
+
+esc_status_t esc_set_channel(TIM_HandleTypeDef *htim, uint32_t tim_channel , uint16_t set_value);
+esc_status_t esc_set_all(TIM_HandleTypeDef *htim, uint16_t set_value);
+
+#endif /* ESC_H_ */

@@ -1,0 +1,6 @@
+Added Component: Designator=RF1(RECEIVER)
+Added Pin To Net: NetName=5V Pin=RF1-5V
+Added Pin To Net: NetName=GND Pin=RF1-GND
+Added Pin To Net: NetName=NetR2_1 Pin=RF1-SBUS
+Added Pin To Net: NetName=NetR2_1 Pin=RF1-SBUS
+Added Member To Class: ClassName=Quadcopter Member=Component RF1 MC7RE

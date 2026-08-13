@@ -1,0 +1,8 @@
+../SBUSLib/SBUS.c:22:15:SBUS_init	16	static
+../SBUSLib/SBUS.c:32:6:SBUS_decode	16	static
+../SBUSLib/SBUS.c:55:15:SBUS_find_frame	24	static
+../SBUSLib/SBUS.c:72:13:SBUS_is_frame_lost	16	static
+../SBUSLib/SBUS.c:77:13:SBUS_is_failsafe	16	static
+../SBUSLib/SBUS.c:84:15:SBUS_check_frame	16	static
+../SBUSLib/SBUS.c:97:10:SBUS_get_channel	16	static
+../SBUSLib/SBUS.c:113:6:SBUS_clear_old_data	24	static

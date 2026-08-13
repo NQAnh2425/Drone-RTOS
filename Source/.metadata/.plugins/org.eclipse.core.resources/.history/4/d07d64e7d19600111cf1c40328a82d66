@@ -1,0 +1,32 @@
+/*
+ * drone.h
+ *
+ *  Created on: Aug 13, 2026
+ *      Author: Admin
+ */
+
+#ifndef DRONE_H_
+#define DRONE_H_
+
+typedef enum Error_code
+{
+    ERROR_NONE = 0,
+    ERROR_TIMEOUT,
+    ERROR_ESC_INIT,
+    ERROR_MPU_INIT,
+    ERROR_SBUS_INIT,
+}error_code_t;
+
+typedef enum Drone_status
+{
+	DRONE_INIT,
+	DRONE_INIT_SUCCESS,
+    DRONE_ARMED,
+    DRONE_FLYING,
+    DRONE_FAILSAFE,
+    DRONE_ERROR
+} drone_status_t;
+
+
+
+#endif /* DRONE_H_ */

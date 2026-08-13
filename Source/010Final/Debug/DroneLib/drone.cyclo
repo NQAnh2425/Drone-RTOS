@@ -1,0 +1,3 @@
+../DroneLib/drone.c:13:11:drone_init	4
+../DroneLib/drone.c:29:8:drone_config	2
+../DroneLib/drone.c:51:6:drone_soft_start	1

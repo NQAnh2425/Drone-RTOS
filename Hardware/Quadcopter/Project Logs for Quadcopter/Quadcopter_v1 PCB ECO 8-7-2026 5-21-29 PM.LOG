@@ -1,0 +1,11 @@
+Change Component Designator: OldDesignator=BUCK1584 NewDesignator=U2
+Change Component Designator: OldDesignator=ESC1 NewDesignator=J3
+Change Component Designator: OldDesignator=ESC2 NewDesignator=J4
+Change Component Designator: OldDesignator=ESC3 NewDesignator=J5
+Change Component Designator: OldDesignator=ESC4 NewDesignator=J6
+Change Designator: Unknown Component : GPS
+Change Component Designator: OldDesignator=HMC5883L NewDesignator=J1
+Change Component Designator: OldDesignator=MC7RE NewDesignator=RF1
+Change Component Designator: OldDesignator=MPU6050 NewDesignator=U4
+Change Component Designator: OldDesignator=STM32F405 NewDesignator=U3
+Added Member To Class: ClassName=Quadcopter Member=Component U3 STM32F405_WEACTKIT

@@ -1,0 +1,12 @@
+../MPU6050Lib/MPU6050.c:13:18:mpu6050_read_byte	48	static
+../MPU6050Lib/MPU6050.c:24:18:mpu6050_read	48	static
+../MPU6050Lib/MPU6050.c:35:18:mpu6050_write_byte	48	static
+../MPU6050Lib/MPU6050.c:46:18:mpu6050_init	24	static
+../MPU6050Lib/MPU6050.c:100:18:mpu6050_read_data	40	static
+../MPU6050Lib/MPU6050.c:129:18:mpu6050_interrupt_config	24	static
+../MPU6050Lib/MPU6050.c:145:18:mpu6050_enable_interrupt	24	static
+../MPU6050Lib/MPU6050.c:161:18:mpu6050_disable_interrupt	24	static
+../MPU6050Lib/MPU6050.c:177:25:get_interrupt_status	16	static
+../MPU6050Lib/MPU6050.c:182:25:get_interrupt_setting	16	static
+../MPU6050Lib/MPU6050.c:187:6:mpu6050_interrupt_handle	24	static
+../MPU6050Lib/MPU6050.c:212:6:mpu6050_calibration	24	static

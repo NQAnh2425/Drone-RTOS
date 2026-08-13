@@ -1,0 +1,5 @@
+../ESCLib/ESC.c:6:14:esc_init	5
+../ESCLib/ESC.c:24:14:esc_set_channel	8
+../ESCLib/ESC.c:54:14:esc_stop_channel	9
+../ESCLib/ESC.c:84:14:esc_stop_all	5
+../ESCLib/ESC.c:97:14:esc_set_all	5

@@ -1,0 +1,17 @@
+16:05:04 **** Incremental Build of configuration Debug for project 010Final ****
+make -j16 all 
+arm-none-eabi-gcc "../MotorLib/Motor.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F405xx -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"MotorLib/Motor.d" -MT"MotorLib/Motor.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "MotorLib/Motor.o"
+arm-none-eabi-gcc -o "010Final.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 010Final.elf
+ 
+arm-none-eabi-size   010Final.elf 
+arm-none-eabi-objdump -h -S  010Final.elf  > "010Final.list"
+   text	   data	    bss	    dec	    hex	filename
+  26100	    100	   2620	  28820	   7094	010Final.elf
+Finished building: default.size.stdout
+ 
+Finished building: 010Final.list
+ 
+
+16:05:05 Build Finished. 0 errors, 0 warnings. (took 644ms)
+

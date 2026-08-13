@@ -1,0 +1,17 @@
+/*
+ * app_callback.h
+ *
+ *  Created on: Aug 10, 2026
+ *      Author: Admin
+ */
+
+#ifndef SRC_APP_CALLBACK_H_
+#define SRC_APP_CALLBACK_H_
+
+#include "main.h"
+#include "SBUS.h"
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+
+#endif /* SRC_APP_CALLBACK_H_ */

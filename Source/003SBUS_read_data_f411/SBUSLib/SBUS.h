@@ -1,0 +1,42 @@
+/*
+ * MC7RE.h
+ *
+ *  Created on: Aug 1, 2026
+ *      Author: Admin
+ */
+
+#ifndef SBUS_H_
+#define SBUS_H_
+
+#include "main.h"
+#include "stdint.h"
+
+#define SBUS_FRAME_LEN			((uint16_t) 25)
+#define SBUS_CHANNEL_NUM    	16
+
+
+typedef enum
+{
+	SBUS_OK,
+	SBUS_ERR,
+	SBUS_FRAME_ERR,
+}SBUS_status_t;
+
+
+#include "main.h"
+
+SBUS_status_t SBUS_Init(UART_HandleTypeDef *huart, uint8_t* SBUS_data_raw);
+
+SBUS_status_t SBUS_rx_callback(uint8_t *SBUS_data_raw);
+
+void SBUS_process_frame(void);
+
+void SBUS_Decode(uint8_t *buf, uint16_t *ch);
+
+void SBUS_clear_old_data(uint8_t *SBUS_data_rx);
+
+
+
+
+
+#endif /* SBUS_H_ */

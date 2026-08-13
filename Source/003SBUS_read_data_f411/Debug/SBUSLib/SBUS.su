@@ -1,0 +1,5 @@
+../SBUSLib/SBUS.c:14:15:SBUS_Init	16	static
+../SBUSLib/SBUS.c:26:15:SBUS_rx_callback	16	static
+../SBUSLib/SBUS.c:36:6:SBUS_Decode	16	static
+../SBUSLib/SBUS.c:57:10:SBUS_GetChannel	16	static
+../SBUSLib/SBUS.c:73:6:SBUS_clear_old_data	24	static

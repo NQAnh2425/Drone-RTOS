@@ -1,0 +1,13 @@
+/*
+ * Motor.c
+ *
+ *
+ *
+ */
+
+#include "Motor.h"
+
+void motor_set_speed_percent ( MOTOR_Handle_t motor ,uint8_t percent)
+{
+	esc_set_all(htim, set_value);
+}

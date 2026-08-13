@@ -1,0 +1,3 @@
+../Core/Src/app_callback.c:16:6:HAL_GPIO_EXTI_Callback	2
+../Core/Src/app_callback.c:25:6:mpu6050_motion_detection_callback	1
+../Core/Src/app_callback.c:31:6:mpu6050_raw_data_ready_callback	3
