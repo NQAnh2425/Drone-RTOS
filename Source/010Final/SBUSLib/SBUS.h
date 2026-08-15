@@ -13,29 +13,29 @@
 #include "stdbool.h"
 
 
-#define SBUS_FRAME_LEN			((uint16_t) 25)
+#define SBUS_FRAME_LEN_BYTE			((uint8_t) 25)
 
 
 
-#define SBUS_DEADBAND			10U
+#define SBUS_DEADBAND				10U
 
-#define SBUS_CHANNEL_NUM           16U
-#define SBUS_CHANNEL_MIN           160U
-#define SBUS_CHANNEL_CENTER        992U
-#define SBUS_CHANNEL_MAX           1600U
+#define SBUS_CHANNEL_NUM			16U
+#define SBUS_CHANNEL_MIN			160U
+#define SBUS_CHANNEL_CENTER			992U
+#define SBUS_CHANNEL_MAX			1600U
 
-#define SBUS_THROTTLE_ARM_MAX    	190U
+#define SBUS_THROTTLE_ARM_MAX		190U
 #define SBUS_ROLL_ARM_MIN    		1700U
 #define SBUS_PITCH_ARM_MAX    		190U
 #define SBUS_YAW_ARM_MAX    		190U
 
-#define SBUS_PWM_MIN_US            1000U
-#define SBUS_PWM_CENTER_US         1500U
-#define SBUS_PWM_MAX_US            2000U
+#define SBUS_PWM_MIN_US				1000U
+#define SBUS_PWM_CENTER_US			1500U
+#define SBUS_PWM_MAX_US				2000U
 
 /* Failsafe */
-#define SBUS_TIMEOUT_MS            100U
-#define SBUS_MAX_MISSED_FRAMES     3U
+#define SBUS_TIMEOUT_MS				100U
+#define SBUS_MAX_MISSED_FRAMES		3U
 
 
 typedef enum
@@ -54,7 +54,6 @@ SBUS_status_t SBUS_init(UART_HandleTypeDef *huart, uint8_t* SBUS_data_raw);
 SBUS_status_t SBUS_rx_callback(uint8_t *SBUS_data_raw);
 
 void SBUS_decode(uint8_t *buf, uint16_t *ch);
-
 
 SBUS_status_t SBUS_check_frame( uint8_t *buf);
 uint16_t SBUS_get_channel(uint8_t ch, uint16_t *channel);

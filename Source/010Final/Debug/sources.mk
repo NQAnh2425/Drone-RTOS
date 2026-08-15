@@ -30,5 +30,6 @@ ESCLib \
 KalmanLib \
 MPU6050Lib \
 MotorLib \
+PIDLib \
 SBUSLib \
 

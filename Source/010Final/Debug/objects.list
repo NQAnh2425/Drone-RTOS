@@ -28,4 +28,5 @@
 "./KalmanLib/kalman.o"
 "./MPU6050Lib/MPU6050.o"
 "./MotorLib/Motor.o"
+"./PIDLib/PID.o"
 "./SBUSLib/SBUS.o"

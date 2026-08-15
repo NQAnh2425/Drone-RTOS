@@ -21,7 +21,16 @@
 	  motor_handle[3].tim_channel = TIM_CHANNEL_4;
   }
 
-Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed)
+
+uint16_t motor_get_pwm_channel(MOTOR_Handle_t *motor_handle)
+{
+	return __HAL_TIM_GET_COMPARE(motor_handle->htim, motor_handle->tim_channel);
+}
+
+
+
+
+Motor_status_t motor_set_speed_channel ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed)
 {
 	uint16_t set_value = motor_speed + 1000;
 	if(esc_set_channel(motor_handle->htim, (uint32_t)motor_handle->tim_channel ,set_value) != ESC_OK)
@@ -30,12 +39,27 @@ Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_sp
 	return MOTOR_OK;
 }
 
+
+
+Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed)
+{
+	uint16_t set_value = motor_speed + 1000;
+	if(esc_set_all(motor_handle->htim, set_value) != ESC_OK)
+	return MOTOR_FAIL;
+
+	return MOTOR_OK;
+}
+
+
+
 Motor_status_t motor_stop( MOTOR_Handle_t *motor_handle)
 {
 	if(esc_stop_channel(motor_handle->htim,(uint32_t)motor_handle->tim_channel) != ESC_OK)
 		return MOTOR_FAIL;
 	return MOTOR_OK;
 }
+
+
 
 Motor_status_t motor_stop_all (MOTOR_Handle_t *motor_handle)
 {

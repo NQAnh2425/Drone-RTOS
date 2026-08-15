@@ -1,27 +1,19 @@
-16:03:40 **** Incremental Build of configuration Debug for project 010Final ****
+14:26:52 **** Incremental Build of configuration Debug for project 010Final ****
 make -j16 all 
-arm-none-eabi-size   010Final.elf 
-   text	   data	    bss	    dec	    hex	filename
-  26100	    100	   2620	  28820	   7094	010Final.elf
-Finished building: default.size.stdout
- 
-16:03:43 **** Incremental Build of configuration Debug for project 010Final ****
-make -j16 all 
-arm-none-eabi-size   010Final.elf 
-   text	   data	    bss	    dec	    hex	filename
-  26100	    100	   2620	  28820	   7094	010Final.elf
-Finished building: default.size.stdout
- 
-16:05:04 **** Incremental Build of configuration Debug for project 010Final ****
-make -j16 all 
-arm-none-eabi-gcc "../MotorLib/Motor.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F405xx -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"MotorLib/Motor.d" -MT"MotorLib/Motor.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "MotorLib/Motor.o"
-arm-none-eabi-gcc -o "010Final.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F405xx -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:285:19: warning: enumeration value 'DRONE_INIT' not handled in switch [-Wswitch]
+  285 |                   switch (drone_handle.status)
+      |                   ^~~~~~
+../Core/Src/main.c:285:19: warning: enumeration value 'DRONE_FLYING' not handled in switch [-Wswitch]
+../Core/Src/main.c:285:19: warning: enumeration value 'DRONE_ERROR' not handled in switch [-Wswitch]
+arm-none-eabi-gcc -o "010Final.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: 010Final.elf
  
 arm-none-eabi-size   010Final.elf 
 arm-none-eabi-objdump -h -S  010Final.elf  > "010Final.list"
    text	   data	    bss	    dec	    hex	filename
-  26100	    100	   2620	  28820	   7094	010Final.elf
+  44392	    476	   2692	  47560	   b9c8	010Final.elf
 Finished building: default.size.stdout
  
 Finished building: 010Final.list

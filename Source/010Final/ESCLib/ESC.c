@@ -51,6 +51,7 @@ esc_status_t esc_set_channel(TIM_HandleTypeDef *htim, uint32_t tim_channel , uin
     return (__HAL_TIM_GET_COMPARE(htim, tim_channel) == set_value) ? ESC_OK : ESC_FAIL;
 }
 
+
 esc_status_t esc_stop_channel(TIM_HandleTypeDef *htim, uint32_t tim_channel)
 {
 	switch (tim_channel)
@@ -80,6 +81,7 @@ esc_status_t esc_stop_channel(TIM_HandleTypeDef *htim, uint32_t tim_channel)
 	}
     return (__HAL_TIM_GET_COMPARE(htim, tim_channel) == 1000) ? ESC_OK : ESC_FAIL;
 }
+
 
 esc_status_t esc_stop_all(TIM_HandleTypeDef *htim)
 {

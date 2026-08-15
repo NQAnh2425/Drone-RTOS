@@ -10,6 +10,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include SBUSLib/subdir.mk
+-include PIDLib/subdir.mk
 -include MotorLib/subdir.mk
 -include MPU6050Lib/subdir.mk
 -include KalmanLib/subdir.mk
@@ -67,7 +68,7 @@ main-build: 010Final.elf secondary-outputs
 
 # Tool invocations
 010Final.elf 010Final.map: $(OBJS) $(USER_OBJS) C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "010Final.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "010Final.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

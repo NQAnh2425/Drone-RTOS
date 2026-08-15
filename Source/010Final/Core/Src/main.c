@@ -21,15 +21,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <math.h>
-#include <stdarg.h>
-#include <string.h>
 
 #include "MPU6050.h"
 #include "kalman.h"
 #include "SBUS.h"
 #include "ESC.h"
 #include "Motor.h"
+#include "PID.h"
 #include "drone.h"
 //#include "app_callback.h"
 
@@ -37,8 +35,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define ESC_CALIB
-/*#define LOG_DEBUG(fmt, ...) mprint("[DEBUG] %s:%d -> %s(): " fmt "\r\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__)*/
+
+//#define ESC_CALIB
+#define PID_SETTING
+#define UART2_RX_BUFFER_SIZE 32
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -72,8 +72,8 @@ MPU6050_Handle_t	MPU6050_handle;
 
 
 /*=======================  SBUS global variables ==================== */
-uint8_t SBUS_raw_data_rx[SBUS_FRAME_LEN];
-uint16_t channel[16];
+uint8_t SBUS_raw_data_rx[SBUS_FRAME_LEN_BYTE];
+uint16_t channel[SBUS_CHANNEL_NUM];
 
 
 /*=======================  Motor global variables ====================*/
@@ -87,7 +87,20 @@ uint32_t pwm_set;
 
 /*======================= generic global variables ===================*/
 Drone_handle_t	drone_handle;
+PID_parameter_t pid_parameter_pitch;
+PID_parameter_t pid_parameter_roll;
+PID_parameter_t pid_parameter_yaw;
 uint8_t 		receive_flag;
+
+
+
+
+uint8_t uart2_rx_byte;
+uint8_t pid_setting_done;
+char uart2_rx_buffer[UART2_RX_BUFFER_SIZE];
+uint8_t uart2_rx_index = 0;
+
+PID_parameter_t *current_pid = NULL;
 
 
 /* USER CODE END PV */
@@ -103,7 +116,6 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-
 void mprint(const char *fmt, ...)
 {
     char buffer[256];
@@ -116,6 +128,20 @@ void mprint(const char *fmt, ...)
     HAL_UART_Transmit(&huart2,(uint8_t *)buffer, strlen(buffer),HAL_MAX_DELAY);
 
     va_end(args);
+}
+
+void PID_setting(void)
+{
+    uart2_rx_index = 0;
+    pid_setting_done = 0;
+
+    current_pid = &pid_parameter_pitch;
+	LOG("=============================PID setting============================/n");
+    LOG("Pitch P I D: ");
+
+    HAL_UART_Receive_IT(&huart2,
+                        &uart2_rx_byte,
+                        1);
 }
 /* USER CODE END PFP */
 
@@ -163,28 +189,28 @@ int main(void)
   /*============================= Drone initialize ==========================*/
 
   drone_init(&drone_handle, motor_handle, &MPU6050_handle);
-//
-//
-//
-//
-//  /*=========================== Motor initialize   ==========================*/
-//
+
+
+
+
+  /*=========================== Motor initialize   ==========================*/
+
   motor_init(motor_handle, &htim1);
-//
-//
-//
-//
-//  /*=========================== MPU6050 initialize ==========================*/
-//
-//  if(mpu6050_init(&MPU6050_handle, &hi2c2 ,MPU6050_ADDR) != MPU6050_OK)
-//  {
-//	  drone_handle.status = DRONE_ERROR;
-//	  drone_handle.drone_armed = false;
-//	  drone_handle.error_code = ERROR_MPU_INIT;
-//	  Error_Handler();
-//  }
-//  /*============================= ESC initialize ============================*/
-//
+
+
+
+
+  /*=========================== MPU6050 initialize ==========================*/
+
+  if(mpu6050_init(&MPU6050_handle, &hi2c2 ,MPU6050_ADDR) != MPU6050_OK)
+  {
+	  drone_handle.status = DRONE_ERROR;
+	  drone_handle.drone_armed = false;
+	  drone_handle.error_code = ERROR_MPU_INIT;
+	  Error_Handler();
+  }
+  /*============================= ESC initialize ============================*/
+
   if(esc_init(&htim1) != ESC_OK)
   {
 	  drone_handle.status = DRONE_ERROR;
@@ -192,15 +218,41 @@ int main(void)
 	  drone_handle.error_code = ERROR_ESC_INIT;
 	  Error_Handler();
   }
-//
-//  /*============================= Drone configurate ==========================*/
+
+  /*============================= Drone configurate ==========================*/
 //  drone_config(&drone_handle);
-//
-//
-//
-//
-//  /*============================= SBUS initialize ===========================*/
-//
+
+
+
+
+
+
+  /*============================= PID setting ================================*/
+
+  uint32_t current_tick = HAL_GetTick();
+  LOG("press user button to trigger PID setting \n");
+  LOG("timeout: 5s\n");
+  while((HAL_GetTick() - current_tick) <= 5000 )
+  {
+	  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)==GPIO_PIN_SET)
+		  {
+		  HAL_UART_Receive_IT(&huart2, &uart2_rx_byte, 1);
+		  LOG("PID setting mode required detected!\n ");
+
+		  PID_setting();
+		  while(current_pid!=NULL);
+		  }
+	LOG("\nPID parameter:\n");
+	LOG("Pitch: %0.3f %0.3f %0.3f \n",pid_parameter_pitch.p,pid_parameter_pitch.i ,pid_parameter_pitch.d);
+	LOG("Roll : %0.3f %0.3f %0.3f \n",pid_parameter_roll.p,pid_parameter_roll.i ,pid_parameter_roll.d);
+	LOG("Yaw  : %0.3f %0.3f %0.3f \n",pid_parameter_yaw.p,pid_parameter_yaw.i ,pid_parameter_yaw.d);
+  }
+
+
+
+
+  /*============================= SBUS initialize ============================*/
+
   __disable_irq();
   if(SBUS_init(&huart1, SBUS_raw_data_rx)!= SBUS_OK)
   {
@@ -211,10 +263,13 @@ int main(void)
 	  Error_Handler();
   }
   __enable_irq();
-//
 
 
-/*  static uint8_t arm_delay = 3;*/
+
+
+  drone_handle.pre_status = drone_handle.status;
+  drone_handle.status = DRONE_INIT_SUCCESS;
+
 
 #ifdef ESC_CALIB
   motor_id = MOTOR_1;
@@ -227,115 +282,24 @@ int main(void)
   while (1)
   {
 
-#ifdef ESC_CALIB
-	  if(switch_motor_flag == 1)
-	  {
-		  switch_motor_flag =0;
-		  motor_id = (motor_id+1)%4;
-		  mprint("motor %d in calibration\n", (motor_id+1));
-	  }
-	  if(receive_flag)
-	  {
-		  receive_flag = 0;
-		  switch (SBUS_check_frame(SBUS_raw_data_rx))
-		 {
-		  case(SBUS_OK):
-				uint16_t motor_speed = 0;
-				SBUS_decode(SBUS_raw_data_rx,channel);
-
-				if(channel[2] <= SBUS_CHANNEL_MIN)
-				{
-					motor_speed = 0;
-				}
-				else
-				{
-					if(channel[2] >= SBUS_CHANNEL_MAX)
-					{
-							motor_speed = 560;
-					}
-					else
-					{
-						motor_speed = ((uint32_t)channel[2] - SBUS_CHANNEL_MIN)*(ESC_PWM_MAX - ESC_PWM_MIN)/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN);
-					}
-				}
-				pwm_set = motor_speed+1000;
-				if(motor_set_speed(&motor_handle[motor_id], motor_speed) == MOTOR_OK)
-				{
-					mprint("pwm set: %u us\n", pwm_set);
-				}
-				else
-				{
-					mprint("ERROR in setting motor\n");
-				}
-				break;
-		  default:
-			  break;
-		 }
-
-#endif
-
-#if 0
-		  switch (status)
+		  switch (drone_handle.status)
 	{
 		  case(DRONE_INIT_SUCCESS):
 			  if(receive_flag)
 			  {
-				  switch (SBUS_check_frame(SBUS_raw_data_rx))
-				  {
-				  case(SBUS_OK):
-						  if(pre_status != DRONE_INIT_SUCCESS)
-						  {
-							  arm_delay = 3;
-							  pre_status = status;
-						  }
-						  SBUS_decode(SBUS_raw_data_rx,channel);
-						  if( (channel[0] >= SBUS_ROLL_ARM_MIN)&& (channel[1] <= SBUS_PITCH_ARM_MAX) \
-						  && (channel[2] <= SBUS_THROTTLE_ARM_MAX)&&(channel[3]<= SBUS_YAW_ARM_MAX)\
-						  &&(drone_armed == 1))
-						  {
-							  arm_delay--;
-							  if(arm_delay == 0)
-							  {
-								  esc_set_all(&htim1,1100);
-								  pre_status = status;
-								  status = DRONE_ARMED;
-							  }
-						  }
-						  break;
-				  case(SBUS_FRAME_NOTFOND):
-				  case(SBUS_ERR_FRAME_LOST):
-				  case(SBUS_ERR_FAILSAFE):
-				  case(SBUS_ERR_INVALID):
-				  default:
-					  arm_delay = 3;
-					  break;
-				  }
+				  drone_check_arm_signal(&drone_handle);
 				  break;
 			  }
 		  case(DRONE_ARMED):
-			  if(receive_flag)
-			  {
-				  switch (SBUS_check_frame(SBUS_raw_data_rx))
-				  {
-				  case(SBUS_OK):
-
-					SBUS_decode(SBUS_raw_data_rx,channel);
-					esc_set_all(&htim1, channel[2]);
-					pre_status = status;
-					break;
-				  }
-				}
-			pre_status = status;
+				  drone_armed(&drone_handle);
 			break;
 		  case(DRONE_FAILSAFE):
-				  break;
+			break;
 	  }
-#endif
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	  }
-  }
   /* USER CODE END 3 */
 }
 
@@ -726,23 +690,80 @@ static void MX_GPIO_Init(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if(huart->Instance == USART1)
-	{
-		receive_flag = 1;
-		if (  HAL_UART_Receive_DMA(huart, SBUS_raw_data_rx, sizeof(SBUS_raw_data_rx)) != HAL_OK)
-			{
-			drone_handle.error_code = ERROR_SBUS_INIT;
-			Error_Handler();
-			}
-	}
-	else
-	{
-		if (  HAL_UART_Receive_DMA(huart, SBUS_raw_data_rx, sizeof(SBUS_raw_data_rx)) != HAL_OK)
-			{
-			drone_handle.error_code = ERROR_SBUS_INIT;
-			Error_Handler();
-			}
-	}
+    if (huart->Instance == USART1)
+    {
+        receive_flag = 1;
+
+        if (HAL_UART_Receive_DMA(huart,
+                                 SBUS_raw_data_rx,
+                                 sizeof(SBUS_raw_data_rx)) != HAL_OK)
+        {
+            drone_handle.error_code = ERROR_SBUS_INIT;
+            Error_Handler();
+        }
+    }
+
+    else if (huart->Instance == USART2)
+    {
+        /* ';' = ký tự kết thúc một dòng PID */
+        if (uart2_rx_byte == ';')
+        {
+            /* Kết thúc chuỗi */
+            uart2_rx_buffer[uart2_rx_index] = '\0';
+
+            /* Chỉ parse nếu có dữ liệu */
+            if (uart2_rx_index > 0 && current_pid != NULL)
+            {
+                parse_pid(uart2_rx_buffer,
+                          &current_pid->p,
+                          &current_pid->i,
+                          &current_pid->d);
+
+                /* Pitch -> Roll */
+                if (current_pid == &pid_parameter_pitch)
+                {
+                    current_pid = &pid_parameter_roll;
+
+                    LOG("\r\nRoll P I D: ");
+                }
+
+                /* Roll -> Yaw */
+                else if (current_pid == &pid_parameter_roll)
+                {
+                    current_pid = &pid_parameter_yaw;
+
+                    LOG("\r\nYaw P I D: ");
+                }
+
+                /* Yaw -> Done */
+                else
+                {
+                    current_pid = NULL;
+
+                    pid_setting_done = 1;
+
+                    LOG("\r\nPID setting done\r\n");
+                }
+            }
+
+            /* Reset buffer */
+            uart2_rx_index = 0;
+        }
+
+        else
+        {
+            /* Lưu ký tự vào buffer */
+            if (uart2_rx_index < UART2_RX_BUFFER_SIZE - 1)
+            {
+                uart2_rx_buffer[uart2_rx_index++] = uart2_rx_byte;
+            }
+        }
+
+        /* Tiếp tục nhận byte tiếp theo */
+        HAL_UART_Receive_IT(&huart2,
+                            &uart2_rx_byte,
+                            1);
+    }
 }
 
 #ifdef ESC_CALIB
@@ -754,6 +775,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 #endif
+
 /* USER CODE END 4 */
 
 /**

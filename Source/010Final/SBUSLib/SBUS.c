@@ -31,35 +31,35 @@ SBUS_status_t SBUS_init(UART_HandleTypeDef *huart, uint8_t* SBUS_data_raw)
 
 void SBUS_decode(uint8_t *buf, uint16_t *ch)
 {
-    ch[0]  = ((buf[(header_pos+1) % SBUS_FRAME_LEN]  | buf[(header_pos+2) % SBUS_FRAME_LEN] << 8)                                              & 0x07FF);
-    ch[1]  = ((buf[(header_pos+2) % SBUS_FRAME_LEN] >> 3 | buf[(header_pos+3) % SBUS_FRAME_LEN] << 5)                                           & 0x07FF);
-    ch[2]  = ((buf[(header_pos+3) % SBUS_FRAME_LEN] >> 6 | buf[(header_pos+4) % SBUS_FRAME_LEN] << 2 | buf[(header_pos+5) % SBUS_FRAME_LEN] << 10) & 0x07FF);
-    ch[3]  = ((buf[(header_pos+5) % SBUS_FRAME_LEN] >> 1 | buf[(header_pos+6) % SBUS_FRAME_LEN] << 7)                                           & 0x07FF);
-    ch[4]  = ((buf[(header_pos+6) % SBUS_FRAME_LEN] >> 4 | buf[(header_pos+7) % SBUS_FRAME_LEN] << 4)                                           & 0x07FF);
-    ch[5]  = ((buf[(header_pos+7) % SBUS_FRAME_LEN] >> 7 | buf[(header_pos+8) % SBUS_FRAME_LEN] << 1 | buf[(header_pos+9) % SBUS_FRAME_LEN] << 9)  & 0x07FF);
-    ch[6]  = ((buf[(header_pos+9) % SBUS_FRAME_LEN] >> 2 | buf[(header_pos+10) % SBUS_FRAME_LEN] << 6)                                          & 0x07FF);
-    ch[7]  = ((buf[(header_pos+10) % SBUS_FRAME_LEN] >> 5 | buf[(header_pos+11) % SBUS_FRAME_LEN] << 3)                                         & 0x07FF);
+    ch[0]  = ((buf[(header_pos+1) % SBUS_FRAME_LEN_BYTE]  | buf[(header_pos+2) % SBUS_FRAME_LEN_BYTE] << 8)                                              & 0x07FF);
+    ch[1]  = ((buf[(header_pos+2) % SBUS_FRAME_LEN_BYTE] >> 3 | buf[(header_pos+3) % SBUS_FRAME_LEN_BYTE] << 5)                                           & 0x07FF);
+    ch[2]  = ((buf[(header_pos+3) % SBUS_FRAME_LEN_BYTE] >> 6 | buf[(header_pos+4) % SBUS_FRAME_LEN_BYTE] << 2 | buf[(header_pos+5) % SBUS_FRAME_LEN_BYTE] << 10) & 0x07FF);
+    ch[3]  = ((buf[(header_pos+5) % SBUS_FRAME_LEN_BYTE] >> 1 | buf[(header_pos+6) % SBUS_FRAME_LEN_BYTE] << 7)                                           & 0x07FF);
+    ch[4]  = ((buf[(header_pos+6) % SBUS_FRAME_LEN_BYTE] >> 4 | buf[(header_pos+7) % SBUS_FRAME_LEN_BYTE] << 4)                                           & 0x07FF);
+    ch[5]  = ((buf[(header_pos+7) % SBUS_FRAME_LEN_BYTE] >> 7 | buf[(header_pos+8) % SBUS_FRAME_LEN_BYTE] << 1 | buf[(header_pos+9) % SBUS_FRAME_LEN_BYTE] << 9)  & 0x07FF);
+    ch[6]  = ((buf[(header_pos+9) % SBUS_FRAME_LEN_BYTE] >> 2 | buf[(header_pos+10) % SBUS_FRAME_LEN_BYTE] << 6)                                          & 0x07FF);
+    ch[7]  = ((buf[(header_pos+10) % SBUS_FRAME_LEN_BYTE] >> 5 | buf[(header_pos+11) % SBUS_FRAME_LEN_BYTE] << 3)                                         & 0x07FF);
 
-    ch[8]  = ((buf[(header_pos+12) % SBUS_FRAME_LEN] | buf[(header_pos+13) % SBUS_FRAME_LEN] << 8)                                              & 0x07FF);
-    ch[9]  = ((buf[(header_pos+13) % SBUS_FRAME_LEN] >> 3 | buf[(header_pos+14) % SBUS_FRAME_LEN] << 5)                                         & 0x07FF);
-    ch[10] = ((buf[(header_pos+14) % SBUS_FRAME_LEN] >> 6 | buf[(header_pos+15) % SBUS_FRAME_LEN] << 2 | buf[(header_pos+16) % SBUS_FRAME_LEN] << 10) & 0x07FF);
-    ch[11] = ((buf[(header_pos+16) % SBUS_FRAME_LEN] >> 1 | buf[(header_pos+17) % SBUS_FRAME_LEN] << 7)                                         & 0x07FF);
-    ch[12] = ((buf[(header_pos+17) % SBUS_FRAME_LEN] >> 4 | buf[(header_pos+18) % SBUS_FRAME_LEN] << 4)                                         & 0x07FF);
-    ch[13] = ((buf[(header_pos+18) % SBUS_FRAME_LEN] >> 7 | buf[(header_pos+19) % SBUS_FRAME_LEN] << 1 | buf[(header_pos+20) % SBUS_FRAME_LEN] << 9) & 0x07FF);
-    ch[14] = ((buf[(header_pos+20) % SBUS_FRAME_LEN] >> 2 | buf[(header_pos+21) % SBUS_FRAME_LEN] << 6)                                         & 0x07FF);
-    ch[15] = ((buf[(header_pos+21) % SBUS_FRAME_LEN] >> 5 | buf[(header_pos+22) % SBUS_FRAME_LEN] << 3)                                         & 0x07FF);
+    ch[8]  = ((buf[(header_pos+12) % SBUS_FRAME_LEN_BYTE] | buf[(header_pos+13) % SBUS_FRAME_LEN_BYTE] << 8)                                              & 0x07FF);
+    ch[9]  = ((buf[(header_pos+13) % SBUS_FRAME_LEN_BYTE] >> 3 | buf[(header_pos+14) % SBUS_FRAME_LEN_BYTE] << 5)                                         & 0x07FF);
+    ch[10] = ((buf[(header_pos+14) % SBUS_FRAME_LEN_BYTE] >> 6 | buf[(header_pos+15) % SBUS_FRAME_LEN_BYTE] << 2 | buf[(header_pos+16) % SBUS_FRAME_LEN_BYTE] << 10) & 0x07FF);
+    ch[11] = ((buf[(header_pos+16) % SBUS_FRAME_LEN_BYTE] >> 1 | buf[(header_pos+17) % SBUS_FRAME_LEN_BYTE] << 7)                                         & 0x07FF);
+    ch[12] = ((buf[(header_pos+17) % SBUS_FRAME_LEN_BYTE] >> 4 | buf[(header_pos+18) % SBUS_FRAME_LEN_BYTE] << 4)                                         & 0x07FF);
+    ch[13] = ((buf[(header_pos+18) % SBUS_FRAME_LEN_BYTE] >> 7 | buf[(header_pos+19) % SBUS_FRAME_LEN_BYTE] << 1 | buf[(header_pos+20) % SBUS_FRAME_LEN_BYTE] << 9) & 0x07FF);
+    ch[14] = ((buf[(header_pos+20) % SBUS_FRAME_LEN_BYTE] >> 2 | buf[(header_pos+21) % SBUS_FRAME_LEN_BYTE] << 6)                                         & 0x07FF);
+    ch[15] = ((buf[(header_pos+21) % SBUS_FRAME_LEN_BYTE] >> 5 | buf[(header_pos+22) % SBUS_FRAME_LEN_BYTE] << 3)                                         & 0x07FF);
 
 }
 
 
 static int8_t SBUS_find_frame(uint8_t *buf)
 {
-    for(uint16_t i = 0; i < SBUS_FRAME_LEN; i++)
+    for(uint16_t i = 0; i < SBUS_FRAME_LEN_BYTE; i++)
     {
         if(buf[i] != 0x0F)
         	continue;
 
-        if(buf[(i + 24)%SBUS_FRAME_LEN] != 0x00)
+        if(buf[(i + 24)%SBUS_FRAME_LEN_BYTE] != 0x00)
             continue;
         header_pos = i;
         return i;
@@ -71,13 +71,13 @@ static int8_t SBUS_find_frame(uint8_t *buf)
 
 static bool SBUS_is_frame_lost( uint8_t *buf)
 {
-    return (buf[(header_pos + 23)%SBUS_FRAME_LEN] & (1 << 2)) != 0;
+    return (buf[(header_pos + 23)%SBUS_FRAME_LEN_BYTE] & (1 << 2)) != 0;
 }
 
 static bool SBUS_is_failsafe( uint8_t *buf)
 {
-    return ((buf[(header_pos + 23)%SBUS_FRAME_LEN] & (1 << 3)) || \
-    		(buf[(header_pos + 23)%SBUS_FRAME_LEN] & (1 << 4)))!= 0;
+    return ((buf[(header_pos + 23)%SBUS_FRAME_LEN_BYTE] & (1 << 3)) || \
+    		(buf[(header_pos + 23)%SBUS_FRAME_LEN_BYTE] & (1 << 4)))!= 0;
 }
 
 

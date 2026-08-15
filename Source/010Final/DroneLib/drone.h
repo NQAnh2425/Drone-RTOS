@@ -11,7 +11,11 @@
 #include "main.h"
 #include "Motor.h"
 #include "MPU6050.h"
-#include "stdbool.h"
+#include "SBUS.h"
+
+
+#define ARM_DELAY_CYCLES		10
+#define PWM_SOFT_START_MAX		1100
 
 typedef enum Error_code
 {
@@ -44,10 +48,14 @@ typedef struct Drone_handle
 }Drone_handle_t;
 
 
+
 uint8_t drone_init( Drone_handle_t* drone_handle , MOTOR_Handle_t* motor_handle, MPU6050_Handle_t* mpu_handle);
 
 void drone_config(Drone_handle_t *drone_handle);
+void drone_check_arm_signal(Drone_handle_t *drone_handle);
+void drone_armed(Drone_handle_t *drone_handle);
 
+uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle);
 
 
 #endif /* DRONE_H_ */

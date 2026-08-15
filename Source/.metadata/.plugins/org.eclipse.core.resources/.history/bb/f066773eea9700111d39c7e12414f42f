@@ -1,0 +1,134 @@
+/*
+ * PID.c
+ *
+ *
+ *
+ */
+#include "PID.h"
+
+extern UART_HandleTypeDef huart2;
+extern PID_parameter_t pid_parameter_pitch;
+extern PID_parameter_t pid_parameter_roll;
+extern PID_parameter_t pid_parameter_yaw;
+float ascii_to_float(char *str)
+{
+    float result = 0.0f;
+    float decimal = 0.1f;
+    int sign = 1;
+
+    // Bỏ khoảng trắng
+    while (*str == ' ' || *str == '\t')
+    {
+        str++;
+    }
+
+    // Xử lý dấu
+    if (*str == '-')
+    {
+        sign = -1;
+        str++;
+    }
+    else if (*str == '+')
+    {
+        str++;
+    }
+
+    // Phần nguyên
+    while (*str >= '0' && *str <= '9')
+    {
+        result = result * 10.0f + (*str - '0');
+        str++;
+    }
+
+    // Phần thập phân
+    if (*str == '.')
+    {
+        str++;
+
+        while (*str >= '0' && *str <= '9')
+        {
+            result += (*str - '0') * decimal;
+            decimal *= 0.1f;
+            str++;
+        }
+    }
+
+    return result * sign;
+}
+
+uint8_t parse_pid(char *str, float *kp, float *ki, float *kd)
+{
+    char number[16];
+    uint8_t index = 0;
+    uint8_t value_count = 0;
+
+    while (*str != '\0')
+    {
+        // Bỏ khoảng trắng
+        while (*str == ' ' || *str == '\t')
+        {
+            str++;
+        }
+
+        if (*str == '\0')
+            break;
+
+        // Lấy một số
+        index = 0;
+
+        while (*str != '\0' && *str != ' ' && *str != '\t')
+        {
+            if (index < sizeof(number) - 1)
+            {
+                number[index++] = *str;
+            }
+            str++;
+        }
+
+        number[index] = '\0';
+
+        // ASCII -> float
+        float value = ascii_to_float(number);
+
+        if (value_count == 0)
+            *kp = value;
+        else if (value_count == 1)
+            *ki = value;
+        else if (value_count == 2)
+            *kd = value;
+        else
+            return 0;
+
+        value_count++;
+    }
+
+    return (value_count == 3);
+}
+uint8_t PID_setting()
+{
+	uint8_t pid_setting_buff[15];
+	uint16_t rx_len;
+	LOG("setting syntax: P I D\n");
+	LOG("example: 2 0.02 0.5 correspond P = 2, I = 0.02, D = 0.5\n");
+	LOG("setting Pitch PID:\n ");
+	if(HAL_UARTEx_ReceiveToIdle(&huart2, pid_setting_buff,15,&rx_len,5000) == HAL_OK)
+	{
+		parse_pid(pid_setting_buff, &(pid_parameter_pitch.p) ,&(pid_parameter_pitch.i), &(pid_parameter_pitch.d));
+		LOG("Pitch PID: %0.3f %0.3f %0.3f \n",pid_parameter_pitch.p,pid_parameter_pitch.i ,pid_parameter_pitch.d);
+	}
+
+	LOG("setting roll PID:\n ");
+	if(HAL_UARTEx_ReceiveToIdle(&huart2, pid_setting_buff,15,&rx_len,5000) == HAL_OK)
+	{
+		parse_pid(pid_setting_buff, &(pid_parameter_roll.p) ,&(pid_parameter_roll.i), &(pid_parameter_roll.d));
+		LOG("Roll PID: %0.3f %0.3f %0.3f \n",pid_parameter_roll.p,pid_parameter_roll.i ,pid_parameter_roll.d);
+	}
+
+	LOG("setting yaw PID:\n ");
+	if(HAL_UARTEx_ReceiveToIdle(&huart2, pid_setting_buff,15,&rx_len,5000) == HAL_OK)
+	{
+		parse_pid(pid_setting_buff, &(pid_parameter_yaw.p) ,&(pid_parameter_yaw.i), &(pid_parameter_yaw.d));
+		LOG("yaw PID: %0.3f %0.3f %0.3f \n",pid_parameter_yaw.p,pid_parameter_yaw.i ,pid_parameter_yaw.d);
+	}
+}
+
