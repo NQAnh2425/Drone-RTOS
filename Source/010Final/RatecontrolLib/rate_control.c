@@ -122,7 +122,6 @@ void RC_command_to_angular_rate(uint16_t *channel, RC_command_t *rc_command)
 
 }
 
-
 float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt)
 {
     float error = pid_input->rate_error[axis];
@@ -139,8 +138,21 @@ float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter,
 }
 
 
+void PID_calculate_error(float *mpu_gyro_data,float target_roll_rate, float target_pitch_rate,float target_yaw_rate,PID_input_t *pid_input)
+{
 
+    /* Save previous error */
+    pid_input->prev_rate_error[0] = pid_input->rate_error[0];
+    pid_input->prev_rate_error[1] = pid_input->rate_error[1];
+    pid_input->prev_rate_error[2] = pid_input->rate_error[2];
 
+    /* Calculate rate error */
+    pid_input->rate_error[PID_ROLL] = target_roll_rate - mpu_gyro_data[0];
+
+    pid_input->rate_error[PID_PITCH] = target_pitch_rate - mpu_gyro_data[1];
+
+    pid_input->rate_error[PID_YAW] = target_yaw_rate - mpu_gyro_data[2];
+}
 
 
 

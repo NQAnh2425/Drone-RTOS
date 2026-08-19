@@ -1,3 +1,4 @@
 ../RatecontrolLib/rate_control.c:16:14:constrain_float	24	static
 ../RatecontrolLib/rate_control.c:27:6:RC_command_to_angular_rate	24	static
-../RatecontrolLib/rate_control.c:126:7:PID_calculate_rate	40	static
+../RatecontrolLib/rate_control.c:125:7:PID_calculate_rate	40	static
+../RatecontrolLib/rate_control.c:141:6:PID_calculate_error	32	static

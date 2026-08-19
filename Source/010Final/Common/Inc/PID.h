@@ -52,6 +52,14 @@ typedef struct
 	float prev_Iterm[3];
 }PID_input_t;
 
+
+typedef struct
+{
+	float angle_error[2];
+	float prev_angle_error[2];
+	float prev_Iterm[2];
+}PID_angle_input_t;
+
 typedef struct
 {
 	float p;
@@ -61,6 +69,6 @@ typedef struct
 
 uint8_t parse_pid(char *str, float *kp, float *ki, float *kd);
 void PID_setting();
-
-
+float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt);
+Motor_output_t motor_mixer(float throttle, float roll_output, float pitch_output, float yaw_output);
 #endif /* PID_H_ */

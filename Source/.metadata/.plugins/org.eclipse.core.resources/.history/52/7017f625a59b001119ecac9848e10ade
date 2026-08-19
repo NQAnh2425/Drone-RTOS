@@ -1,0 +1,31 @@
+/*
+ * rate_control.h
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+#ifndef RATE_CONTROL_H_
+#define RATE_CONTROL_H_
+
+#include "SBUS.h"
+#include "PID.h"
+
+
+#define MAX_ANGULAR_RATE		((float)50.0f)
+#define MIN_ANGULAR_RATE		((float)-50.0f)
+
+#define MAX_RC_CMD_ANGULAR_RATE		1736U
+#define MIN_RC_CMD_ANGULAR_RATE		140U
+#define MAX_RC_CMD_THROTTLE_RATE	1600U
+#define MIN_RC_CMD_THROTTLE_RATE	160U
+
+
+
+
+
+void RC_command_to_angular_rate(uint16_t * channel, RC_command_t *rc_command);
+void PID_calculate_error(float *mpu_gyro_data,float target _roll_rate, float target_pitch_rate,PID_input_t *pid_input);
+
+
+#endif /* RATE_CONTROL_H_ */

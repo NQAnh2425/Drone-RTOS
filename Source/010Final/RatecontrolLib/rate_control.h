@@ -25,7 +25,7 @@
 
 
 void RC_command_to_angular_rate(uint16_t * channel, RC_command_t *rc_command);
-void PID_calculate_error(float *mpu_gyro_data,RC_command_t *rc_command,PID_input_t *pid_input);
-
+void PID_calculate_error(float *mpu_gyro_data,float target_roll_rate, float target_pitch_rate,float target_yaw_rate,PID_input_t *pid_input);
+float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt);
 
 #endif /* RATE_CONTROL_H_ */

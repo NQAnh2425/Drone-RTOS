@@ -36,6 +36,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib/Motor.h \
  C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/Common/Inc/PID.h \
  C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/RatecontrolLib/rate_control.h \
+ C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/AnglecontrolLib/anglemode_control.h \
  C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib/drone.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -75,4 +76,5 @@ C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib/ESC.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib/Motor.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/Common/Inc/PID.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/RatecontrolLib/rate_control.h:
+C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/AnglecontrolLib/anglemode_control.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib/drone.h:

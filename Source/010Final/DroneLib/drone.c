@@ -14,9 +14,16 @@ extern uint8_t SBUS_raw_data_rx[SBUS_FRAME_LEN_BYTE];
 extern uint16_t channel[SBUS_CHANNEL_NUM];
 extern PID_parameter_t pid_parameter_pitch;
 extern PID_parameter_t pid_parameter_roll;
+extern PID_parameter_t pid_parameter_pitch_angle;
+extern PID_parameter_t pid_parameter_roll_angle;
 extern PID_parameter_t pid_parameter_yaw;
 extern RC_command_t rc_command;
 extern PID_input_t	pid_input;
+extern PID_angle_input_t pid_angle_input;
+
+extern Kalman_t KalmanRoll;
+extern Kalman_t KalmanPitch;
+
 extern float AccRoll;
 extern float AccPitch;
 
@@ -195,12 +202,41 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
 		  mpu6050_read_accel(drone_handle->mpu_handle->accelerometer_data,&(drone_handle->mpu_handle->mpu_data));
 
 		  // calculate the pitch, roll angle
-		  AccRoll = atan2f(Ay, sqrtf(Ax * Ax + Az * Az))*180.0f/3.1415926f;
+		  AccRoll = atan2f(
+		      drone_handle->mpu_handle->accelerometer_data[1],
+		      sqrtf(
+		          drone_handle->mpu_handle->accelerometer_data[0] *
+		          drone_handle->mpu_handle->accelerometer_data[0] +
 
-		  AccPitch = -atan2f(Ax, sqrtf(Ay * Ay + Az * Az))*180.0f/3.1415926f;
+		          drone_handle->mpu_handle->accelerometer_data[2] *
+		          drone_handle->mpu_handle->accelerometer_data[2]
+		      )
+		  ) * 180.0f / 3.1415926f;
 
-		  roll = Kalman_Update(&KalmanRoll,Gx,AccRoll,0.004f);
-		  pitch = Kalman_Update(&KalmanPitch, Gy,AccPitch,0.004f);
+		  AccPitch = -atan2f(
+		      drone_handle->mpu_handle->accelerometer_data[0],
+		      sqrtf(
+		          drone_handle->mpu_handle->accelerometer_data[1] *
+		          drone_handle->mpu_handle->accelerometer_data[1] +
+
+		          drone_handle->mpu_handle->accelerometer_data[2] *
+		          drone_handle->mpu_handle->accelerometer_data[2]
+		      )
+		  ) * 180.0f / 3.1415926f;
+
+		  roll = Kalman_Update(
+		      &KalmanRoll,
+		      drone_handle->mpu_handle->gyroscope_data[0],
+		      AccRoll,
+		      0.004f
+		  );
+
+		  pitch = Kalman_Update(
+		      &KalmanPitch,
+		      drone_handle->mpu_handle->gyroscope_data[1],
+		      AccPitch,
+		      0.004f
+		  );
 	  }
 	  else if(sensor_fail_count >= 10)
 	  {
@@ -236,28 +272,43 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
 		  }
 		  break;
 	  }
+
 	  RC_command_to_angle(channel, &rc_command);
 	  //calculate error
-	  PID_calculate_error(drone_handle->mpu_handle->gyroscope_data, &rc_command,&pid_input);
+	  PID_calculate_error_angle(pitch, roll, &rc_command, &pid_angle_input);
+
+	  //calculate PID angle output --> desried rate
+	  pitch_output	= PID_calculate_angle(&pid_angle_input, &pid_parameter_pitch_angle, PITCH_ANGLE, CONTROL_LOOP_SECOND);
+	  roll_output	= PID_calculate_angle(&pid_angle_input, &pid_parameter_roll_angle,ROLL_ANGLE , CONTROL_LOOP_SECOND);
+
+	  throttle_output = rc_command.target_throttle_rate*(1530.0f - 1060.0f)/100 + 1060.0f;
+	  yaw_output = rc_command.target_yaw_rate;
+
+	  //calculate rate error
+	  PID_calculate_error(drone_handle->mpu_handle->gyroscope_data,pitch_output,roll_output,yaw_output, &pid_input);
+
 	  //calculate PID ouput and mix motor control signal
 	  pitch_output	= PID_calculate_rate(&pid_input, &pid_parameter_pitch,PID_PITCH , CONTROL_LOOP_SECOND);
 	  roll_output	= PID_calculate_rate(&pid_input, &pid_parameter_roll,PID_ROLL , CONTROL_LOOP_SECOND);
 	  yaw_output	= PID_calculate_rate(&pid_input, &pid_parameter_yaw,PID_YAW , CONTROL_LOOP_SECOND);
 
-	  throttle_output = rc_command.target_throttle_rate*(1530.0f - 1060.0f)/100 + 1060.0f;
+
+	  pitch_output	= PID_calculate_rate(&pid_input, &pid_parameter_pitch,PID_PITCH , CONTROL_LOOP_SECOND);
+	  roll_output	= PID_calculate_rate(&pid_input, &pid_parameter_roll,PID_ROLL , CONTROL_LOOP_SECOND);
+	  yaw_output	= PID_calculate_rate(&pid_input, &pid_parameter_yaw,PID_YAW , CONTROL_LOOP_SECOND);
+
 	  motor_output_pwm = motor_mixer(throttle_output, roll_output, pitch_output, yaw_output);
-
-
 
 	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[0]),motor_output_pwm.motor1);
 	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[1]),motor_output_pwm.motor2);
 	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[2]),motor_output_pwm.motor3);
 	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[3]),motor_output_pwm.motor4);
 
-	  motor1_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[0]));
-	  motor2_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[1]));
-	  motor3_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[2]));
-	  motor4_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[3]));
+		  motor1_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[0]));
+		  motor2_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[1]));
+		  motor3_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[2]));
+		  motor4_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[3]));
+		  //set cutoff throttle to stop motor
 	  //set cutoff throttle to stop motor
   }
 

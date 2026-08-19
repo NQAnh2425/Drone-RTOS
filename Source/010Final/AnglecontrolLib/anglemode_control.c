@@ -88,17 +88,55 @@ void RC_command_to_angle(uint16_t *channel, RC_command_t *rc_command)
 }
 
 
-void PID_calculate_error_angle(float *mpu_gyro_data,
-								float kalman_pitch,
-								float kalman_roll,
-								RC_command_t *rc_command,
-								PID_input_t *pid_input)
+void PID_calculate_error_angle(float kalman_pitch,
+                               float kalman_roll,
+                               RC_command_t *rc_command,
+                               PID_angle_input_t *pid_input)
 {
+    /* Save previous angle error */
+    pid_input->prev_angle_error[0] = pid_input->angle_error[0];
+    pid_input->prev_angle_error[1] = pid_input->angle_error[1];
+
+    /* Calculate angle error */
+    pid_input->angle_error[0] = rc_command->target_roll - kalman_roll;
+    pid_input->angle_error[1] = rc_command->target_pitch - kalman_pitch;
 
 }
 
 
+float PID_calculate_angle(PID_angle_input_t *pid_angle_input,
+                          PID_parameter_t *pid_parameter,
+                          uint8_t angle,
+                          float dt)
+{
+    float error;
 
+    float P_term;
+    float I_term;
+    float D_term;
+
+    /* Current angle error */
+    error = pid_angle_input->angle_error[angle];
+
+    /* Proportional term */
+    P_term = pid_parameter->p * error;
+
+    /* Integral term */
+    I_term = pid_angle_input->prev_Iterm[angle]
+           + pid_parameter->i * error * dt;
+
+    /* Derivative term */
+    D_term = pid_parameter->d
+           * (error - pid_angle_input->prev_angle_error[angle])
+           / dt;
+
+    /* Save states */
+    pid_angle_input->prev_Iterm[angle] = I_term;
+    pid_angle_input->prev_angle_error[angle] = error;
+
+    /* PID output */
+    return P_term + I_term + D_term;
+}
 
 
 

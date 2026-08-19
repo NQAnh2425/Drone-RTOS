@@ -23,15 +23,16 @@
 #define MAX_RC_CMD_THROTTLE_RATE	1600U
 #define MIN_RC_CMD_THROTTLE_RATE	160U
 
+#define PITCH_ANGLE					0
+#define ROLL_ANGLE					1
 
 void RC_command_to_angle(uint16_t *channel, RC_command_t *rc_command);
 
-void PID_calculate_error_angle(float *mpu_gyro_data,
-						float kalman_pitch,
-						float kalman_roll,
-						RC_command_t *rc_command,
-						PID_input_t *pid_input);
-
+void PID_calculate_error_angle(float kalman_pitch,
+                               float kalman_roll,
+                               RC_command_t *rc_command,
+                               PID_angle_input_t *pid_input);
+float PID_calculate_angle(PID_angle_input_t *pid_angle_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt);
 
 
 #endif /* ANGLEMODE_CONTROL_H_ */

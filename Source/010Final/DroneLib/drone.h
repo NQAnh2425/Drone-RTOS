@@ -9,11 +9,13 @@
 #define DRONE_H_
 
 #include <math.h>
+#include "PID.h"
 #include "main.h"
 #include "Motor.h"
 #include "MPU6050.h"
 #include "SBUS.h"
 #include "rate_control.h"
+#include "anglemode_control.h"
 
 #define ARM_DELAY_CYCLES		10
 #define PWM_SOFT_START_MAX		1100

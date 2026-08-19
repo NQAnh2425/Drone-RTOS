@@ -1,0 +1,74 @@
+/*
+ * PID.h
+ *
+ *  Created on: Aug 14, 2026
+ *      Author: Admin
+ */
+
+#ifndef PID_H_
+#define PID_H_
+#include "main.h"
+
+#define CONTROL_LOOP_SECOND		(0.004f)
+
+#define ANGLE_MODE
+//#define ANGULAR_RATE_MODE
+
+#define MAX_PWM_MOTOR				1530.0f
+#define MIN_PWM_MOTOR				1250.0f
+
+#define PID_ROLL   0
+#define PID_PITCH  1
+#define PID_YAW    2
+
+
+typedef struct
+{
+#ifdef ANGULAR_RATE_MODE
+	float target_pitch_rate; // channel 2 -> channel[1]
+	float target_roll_rate;	// channel 1 -> chanel[0]
+#endif
+#ifdef ANGLE_MODE
+	float target_pitch;
+	float target_roll;
+#endif
+	float target_yaw_rate;	// channel 4 -> channel[3]
+	float target_throttle_rate; // channel 3 -> channel[2]
+}RC_command_t;
+
+
+typedef struct
+{
+    uint16_t motor1;
+    uint16_t motor2;
+    uint16_t motor3;
+    uint16_t motor4;
+} Motor_output_t;
+
+typedef struct
+{
+	float rate_error[3];
+	float prev_rate_error[3];
+	float prev_Iterm[3];
+}PID_input_t;
+
+
+typedef struct
+{
+	float angle_error[3];
+	float prev_angle_error[3];
+	float prev_Iterm[3];
+}PID_angle_input_t;
+
+typedef struct
+{
+	float p;
+	float i;
+	float d;
+}PID_parameter_t;
+
+uint8_t parse_pid(char *str, float *kp, float *ki, float *kd);
+void PID_setting();
+float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt)
+
+#endif /* PID_H_ */

@@ -29,6 +29,7 @@
 #include "Motor.h"
 #include "PID.h"
 #include "rate_control.h"
+#include "anglemode_control.h"
 #include "drone.h"
 //#include "app_callback.h"
 
@@ -105,6 +106,7 @@ PID_parameter_t pid_parameter_pitch_angle;
 PID_parameter_t pid_parameter_roll_angle;
 
 PID_input_t		pid_input;
+PID_angle_input_t pid_angle_input;
 uint8_t 		receive_flag;
 
 
