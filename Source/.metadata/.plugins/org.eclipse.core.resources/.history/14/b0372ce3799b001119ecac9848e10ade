@@ -1,0 +1,15 @@
+/*
+ * anglemode_control.c
+ *
+ */
+
+#include "anglemode_control.h"
+
+
+
+
+
+void RC_command_to_angle(void)
+{
+
+}

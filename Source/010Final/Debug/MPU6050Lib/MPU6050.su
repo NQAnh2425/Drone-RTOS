@@ -11,5 +11,5 @@
 ../MPU6050Lib/MPU6050.c:200:25:get_interrupt_status	16	static
 ../MPU6050Lib/MPU6050.c:205:25:get_interrupt_setting	16	static
 ../MPU6050Lib/MPU6050.c:210:6:mpu6050_interrupt_handle	24	static
-../MPU6050Lib/MPU6050.c:239:19:mpu6050_calibrate	40	static
-../MPU6050Lib/MPU6050.c:268:6:mpu6050_offset_calculate	16	static
+../MPU6050Lib/MPU6050.c:239:19:mpu6050_calibrate	48	static
+../MPU6050Lib/MPU6050.c:272:6:mpu6050_offset_calculate	24	static

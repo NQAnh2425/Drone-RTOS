@@ -1,0 +1,38 @@
+/*
+ * anglemode_control.h
+ *
+ *  Created on: Aug 19, 2026
+ *      Author: Admin
+ */
+
+#ifndef ANGLEMODE_CONTROL_H_
+#define ANGLEMODE_CONTROL_H_
+
+
+#include "main.h"
+#include "SBUS.h"
+#include "PID.h"
+#include "MPU6050.h"
+#include "kalman.h"
+
+#define MAX_ANGLE		((float)50.0f)
+#define MIN_ANGLE		((float)-50.0f)
+
+#define MAX_RC_CMD_ANGLE_RATE		1736U
+#define MIN_RC_CMD_ANGLE_RATE		140U
+#define MAX_RC_CMD_THROTTLE_RATE	1600U
+#define MIN_RC_CMD_THROTTLE_RATE	160U
+
+#define MAX_PWM_MOTOR				1530.0f
+#define MIN_PWM_MOTOR				1250.0f
+
+#define PID_ROLL   0
+#define PID_PITCH  1
+#define PID_YAW    2
+
+
+
+
+
+
+#endif /* ANGLEMODE_CONTROL_H_ */

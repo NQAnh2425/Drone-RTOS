@@ -1,0 +1,240 @@
+/*
+ * PID.c
+ *
+ *
+ *
+ */
+#include "PID.h"
+
+extern UART_HandleTypeDef huart2;
+extern PID_parameter_t pid_parameter_pitch;
+extern PID_parameter_t pid_parameter_roll;
+extern PID_parameter_t pid_parameter_yaw;
+
+
+
+static float ascii_to_float(char *str)
+{
+    float result = 0.0f;
+    float decimal = 0.1f;
+    int sign = 1;
+
+    // Bỏ khoảng trắng
+    while (*str == ' ' || *str == '\t')
+    {
+        str++;
+    }
+
+    // Xử lý dấu
+    if (*str == '-')
+    {
+        sign = -1;
+        str++;
+    }
+    else if (*str == '+')
+    {
+        str++;
+    }
+
+    // Phần nguyên
+    while (*str >= '0' && *str <= '9')
+    {
+        result = result * 10.0f + (*str - '0');
+        str++;
+    }
+
+    // Phần thập phân
+    if (*str == '.')
+    {
+        str++;
+
+        while (*str >= '0' && *str <= '9')
+        {
+            result += (*str - '0') * decimal;
+            decimal *= 0.1f;
+            str++;
+        }
+    }
+
+    return result * sign;
+}
+
+uint8_t parse_pid(char *str, float *kp, float *ki, float *kd)
+{
+    char number[16];
+    uint8_t index = 0;
+    uint8_t value_count = 0;
+
+    while (*str != '\0')
+    {
+        // Bỏ khoảng trắng
+        while (*str == ' ' || *str == '\t')
+        {
+            str++;
+        }
+
+        if (*str == '\0')
+            break;
+
+        // Lấy một số
+        index = 0;
+
+        while (*str != '\0' && *str != ' ' && *str != '\t')
+        {
+            if (index < sizeof(number) - 1)
+            {
+                number[index++] = *str;
+            }
+            str++;
+        }
+
+        number[index] = '\0';
+
+        // ASCII -> float
+        float value = ascii_to_float(number);
+
+        if (value_count == 0)
+            *kp = value;
+        else if (value_count == 1)
+            *ki = value;
+        else if (value_count == 2)
+            *kd = value;
+        else
+            return 0;
+
+        value_count++;
+    }
+
+    return (value_count == 3);
+}
+__weak void PID_setting()
+{
+	uint8_t pid_setting_buff[15] = {0};
+	uint16_t rx_len;
+	LOG("setting syntax: P I D\n");
+	LOG("example: 2 0.02 0.5 correspond P = 2, I = 0.02, D = 0.5\n");
+	LOG("setting Pitch PID:\n ");
+	__HAL_UART_CLEAR_IDLEFLAG(&huart2);
+	if(HAL_UART_Receive(&huart2, pid_setting_buff, 15, 10000) == HAL_OK)
+	{
+	    pid_setting_buff[15] = '\0';
+		parse_pid((char*)pid_setting_buff, &(pid_parameter_pitch.p) ,&(pid_parameter_pitch.i), &(pid_parameter_pitch.d));
+		LOG("Pitch PID: %f %f %f \n",pid_parameter_pitch.p,pid_parameter_pitch.i ,pid_parameter_pitch.d);
+	}
+
+	LOG("setting Roll PID:\n ");
+	__HAL_UART_CLEAR_IDLEFLAG(&huart2);
+	if(HAL_UARTEx_ReceiveToIdle(&huart2, pid_setting_buff,15,&rx_len,10000) == HAL_OK)
+	{
+	    pid_setting_buff[rx_len] = '\0';
+		parse_pid((char*)pid_setting_buff, &(pid_parameter_roll.p) ,&(pid_parameter_roll.i), &(pid_parameter_roll.d));
+		LOG("Roll PID: %0.3f %0.3f %0.3f \n",pid_parameter_roll.p,pid_parameter_roll.i ,pid_parameter_roll.d);
+	}
+
+	LOG("setting yaw PID:\n ");
+	__HAL_UART_CLEAR_IDLEFLAG(&huart2);
+	if(HAL_UARTEx_ReceiveToIdle(&huart2, pid_setting_buff,15,&rx_len,10000) == HAL_OK)
+	{
+	    pid_setting_buff[rx_len] = '\0';
+		parse_pid((char*)pid_setting_buff, &(pid_parameter_yaw.p) ,&(pid_parameter_yaw.i), &(pid_parameter_yaw.d));
+		LOG("yaw PID: %0.3f %0.3f %0.3f \n",pid_parameter_yaw.p,pid_parameter_yaw.i ,pid_parameter_yaw.d);
+	}
+}
+
+void PID_calculate_error(float *mpu_gyro_data,RC_command_t *rc_command,PID_input_t *pid_input)
+{
+
+    /* Save previous error */
+    pid_input->prev_rate_error[0] = pid_input->rate_error[0];
+    pid_input->prev_rate_error[1] = pid_input->rate_error[1];
+    pid_input->prev_rate_error[2] = pid_input->rate_error[2];
+
+    /* Calculate rate error */
+    pid_input->rate_error[PID_ROLL] =  rc_command->target_roll_rate - mpu_gyro_data[0];
+
+    pid_input->rate_error[PID_PITCH] = rc_command->target_pitch_rate - mpu_gyro_data[1];
+
+    pid_input->rate_error[PID_YAW] = rc_command->target_yaw_rate - mpu_gyro_data[2];
+}
+
+
+
+float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt)
+{
+    float error = pid_input->rate_error[axis];
+
+    float P_term = pid_parameter->p * error;
+
+    float I_term = pid_input->prev_Iterm[axis] + pid_parameter->i * error * dt;
+
+    float D_term = pid_parameter->d * (error - pid_input->prev_rate_error[axis])/ dt;
+
+    pid_input->prev_Iterm[axis] = I_term;
+
+    return P_term + I_term + D_term;
+}
+
+float calculate_thottle(float target_throttle_rate)
+{
+	return (target_throttle_rate*(MAX_PWM_MOTOR - 1000.0f) +1000.0f);
+}
+
+static inline uint16_t motor_limit(float value)
+{
+    if (value > MAX_PWM_MOTOR)
+        value = MAX_PWM_MOTOR;
+
+    if (value < MIN_PWM_MOTOR)
+        value = MIN_PWM_MOTOR;
+
+    return (uint16_t)value;
+}
+
+
+Motor_output_t motor_mixer(float throttle, float roll_output, float pitch_output, float yaw_output)
+{
+	Motor_output_t motor_output;
+
+    float motor1;
+    float motor2;
+    float motor3;
+    float motor4;
+
+    motor1 = throttle + roll_output + pitch_output - yaw_output;
+
+    motor2 = throttle - roll_output + pitch_output + yaw_output;
+
+    motor3 = throttle - roll_output - pitch_output - yaw_output;
+
+    motor4 = throttle + roll_output - pitch_output + yaw_output;
+
+    motor_output.motor1 = motor_limit(motor1);
+    motor_output.motor2 = motor_limit(motor2);
+    motor_output.motor3 = motor_limit(motor3);
+    motor_output.motor4 = motor_limit(motor4);
+    return motor_output;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

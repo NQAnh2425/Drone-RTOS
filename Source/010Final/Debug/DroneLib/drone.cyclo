@@ -1,7 +1,0 @@
-../DroneLib/drone.c:29:11:drone_init	4
-../DroneLib/drone.c:45:8:drone_config	2
-../DroneLib/drone.c:64:16:drone_soft_start	6
-../DroneLib/drone.c:79:8:drone_check_arm_signal	8
-../DroneLib/drone.c:118:8:drone_armed	3
-../DroneLib/drone.c:138:8:drone_is_ready_to_fly	11
-../DroneLib/drone.c:178:8:drone_flying_loop	5

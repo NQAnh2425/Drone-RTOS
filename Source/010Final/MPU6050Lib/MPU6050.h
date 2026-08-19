@@ -99,8 +99,9 @@ mpu6050_status_t mpu6050_disable_interrupt(I2C_HandleTypeDef *hi2c, uint8_t mpu_
 void mpu6050_interrupt_handle(I2C_HandleTypeDef *hi2c);
 void mpu6050_motion_detection_callback();
 void mpu6050_raw_data_ready_callback();
-
-void mpu6050_offset_calculate(int32_t *raw_gyroscope_data,uint16_t sample);
-
+#ifdef MPU6050_CALIBRATE
+mpu6050_status_t  mpu6050_calibrate(MPU6050_Handle_t* mpu6050_handle, uint16_t max_sample);
+void mpu6050_offset_calculate(int32_t *raw_gyroscope_data,int32_t *raw_accel_data,uint16_t sample);
+#endif
 
 #endif /* MPU6050_H_ */

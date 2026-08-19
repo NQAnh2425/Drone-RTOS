@@ -11,7 +11,6 @@ RM := rm -rf
 -include sources.mk
 -include SBUSLib/subdir.mk
 -include RatecontrolLib/subdir.mk
--include PIDLib/subdir.mk
 -include MotorLib/subdir.mk
 -include MPU6050Lib/subdir.mk
 -include KalmanLib/subdir.mk
@@ -20,6 +19,8 @@ RM := rm -rf
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
+-include Common/Src/subdir.mk
+-include AnglecontrolLib/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)

@@ -34,7 +34,7 @@ DroneLib/drone.o: ../DroneLib/drone.c ../DroneLib/drone.h \
  C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib/MPU6050.h \
  C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib/SBUS.h \
  C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/RatecontrolLib/rate_control.h \
- C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib/PID.h
+ C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/Common/Inc/PID.h
 ../DroneLib/drone.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -72,4 +72,4 @@ C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib/ESC.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib/MPU6050.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib/SBUS.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/RatecontrolLib/rate_control.h:
-C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib/PID.h:
+C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/Common/Inc/PID.h:

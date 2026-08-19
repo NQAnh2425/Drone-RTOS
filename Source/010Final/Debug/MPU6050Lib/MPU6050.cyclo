@@ -12,4 +12,4 @@
 ../MPU6050Lib/MPU6050.c:205:25:get_interrupt_setting	1
 ../MPU6050Lib/MPU6050.c:210:6:mpu6050_interrupt_handle	5
 ../MPU6050Lib/MPU6050.c:239:19:mpu6050_calibrate	5
-../MPU6050Lib/MPU6050.c:268:6:mpu6050_offset_calculate	1
+../MPU6050Lib/MPU6050.c:272:6:mpu6050_offset_calculate	1

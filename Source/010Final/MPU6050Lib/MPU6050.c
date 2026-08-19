@@ -8,7 +8,7 @@
 #include "MPU6050.h"
 
 static uint8_t mpu6050_i2c_addr;
-static float	mpu6050_offset[3] = {0.0f};
+static float	mpu6050_offset[6] = {0.0f};
 
 mpu6050_status_t mpu6050_read_byte(I2C_HandleTypeDef *hi2c,uint8_t mpu_i2c_addr, uint8_t reg_addr, uint8_t *data)
 {
@@ -241,6 +241,7 @@ mpu6050_status_t  mpu6050_calibrate(MPU6050_Handle_t* mpu6050_handle, uint16_t m
 	  uint16_t i = 0;
 	  uint16_t sample = 0;
 	  int32_t raw_gyroscope_data[3] = {0};
+	  int32_t raw_accel_data[3] = {0};
 	  uint8_t false_count = 0;
 	  for(i=0 ; i< max_sample; i++)
 	  {
@@ -250,6 +251,9 @@ mpu6050_status_t  mpu6050_calibrate(MPU6050_Handle_t* mpu6050_handle, uint16_t m
 			  raw_gyroscope_data[0] += mpu6050_handle->mpu_data.gyro_x;
 			  raw_gyroscope_data[1] += mpu6050_handle->mpu_data.gyro_y;
 			  raw_gyroscope_data[2] += mpu6050_handle->mpu_data.gyro_z;
+			  raw_accel_data[0] += mpu6050_handle->mpu_data.acel_x;
+			  raw_accel_data[1] += mpu6050_handle->mpu_data.acel_y;
+			  raw_accel_data[2] += mpu6050_handle->mpu_data.acel_z;
 		  }
 		  else
 		  {
@@ -261,15 +265,19 @@ mpu6050_status_t  mpu6050_calibrate(MPU6050_Handle_t* mpu6050_handle, uint16_t m
 		  }
 		  HAL_Delay(1);
 	  }
-	  mpu6050_offset_calculate(raw_gyroscope_data, sample);
+	  mpu6050_offset_calculate(raw_gyroscope_data,raw_accel_data, sample);
 	  return MPU6050_OK;
 }
 
-void mpu6050_offset_calculate(int32_t *raw_gyroscope_data,uint16_t sample)
+void mpu6050_offset_calculate(int32_t *raw_gyroscope_data,int32_t *raw_accel_data,uint16_t sample)
 {
 	mpu6050_offset[0] = ((float)raw_gyroscope_data[0]/131.0f)/((float)sample);
 	mpu6050_offset[1] = ((float)raw_gyroscope_data[1]/131.0f)/((float)sample);
 	mpu6050_offset[2] = ((float)raw_gyroscope_data[2]/131.0f)/((float)sample);
+
+	mpu6050_offset[3] = ((float)raw_accel_data[0]/131.0f)/((float)sample);
+	mpu6050_offset[4] = ((float)raw_accel_data[1]/131.0f)/((float)sample);
+	mpu6050_offset[5] = ((float)raw_accel_data[2]/131.0f)/((float)sample);
 }
 
 #endif

@@ -1,0 +1,29 @@
+/*
+ * anglemode_control.h
+ *
+ *  Created on: Aug 19, 2026
+ *      Author: Admin
+ */
+
+#ifndef ANGLEMODE_CONTROL_H_
+#define ANGLEMODE_CONTROL_H_
+
+
+#include "main.h"
+#include "SBUS.h"
+#include "PID.h"
+#include "MPU6050.h"
+#include "kalman.h"
+
+#define MAX_ANGLE		((float)50.0f)
+#define MIN_ANGLE		((float)-50.0f)
+
+#define ANGLE_PITCH		0
+#define ANGLE_ROLL		1
+
+#define CONSTRAIN(x)  (x)<SBUS_CHANNEL_MIN ? ((float)SBUS_CHANNEL_MIN):(((x)>SBUS_CHANNEL_MAX) ? ((float)SBUS_CHANNEL_MAX):(x))
+
+
+
+
+#endif /* ANGLEMODE_CONTROL_H_ */

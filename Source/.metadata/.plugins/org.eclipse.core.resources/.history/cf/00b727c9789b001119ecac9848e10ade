@@ -1,0 +1,27 @@
+/*
+ * anglemode_control.h
+ *
+ *  Created on: Aug 19, 2026
+ *      Author: Admin
+ */
+
+#ifndef ANGLEMODE_CONTROL_H_
+#define ANGLEMODE_CONTROL_H_
+
+
+#include "main.h"
+#include "SBUS.h"
+#include "PID.h"
+
+#define MAX_ANGLE		((float)50.0f)
+#define MIN_ANGLE		((float)-50.0f)
+
+
+
+
+
+
+
+
+
+#endif /* ANGLEMODE_CONTROL_H_ */

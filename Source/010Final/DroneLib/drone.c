@@ -17,6 +17,12 @@ extern PID_parameter_t pid_parameter_roll;
 extern PID_parameter_t pid_parameter_yaw;
 extern RC_command_t rc_command;
 extern PID_input_t	pid_input;
+extern float AccRoll;
+extern float AccPitch;
+
+extern float roll;
+extern float pitch;
+
 
 uint16_t motor1_pwm = 0;
 uint16_t motor2_pwm = 0;
@@ -185,7 +191,16 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
 	  //read calibrated sensor gyro data
 	  if(mpu6050_read_data(drone_handle->mpu_handle->hi2c, MPU6050_ADDR, &(drone_handle->mpu_handle->mpu_data)) == MPU6050_OK)
 	  {
-		  mpu6050_read_gyro(&(drone_handle->mpu_handle->gyroscope_data),&(drone_handle->mpu_handle->mpu_data));
+		  mpu6050_read_gyro(drone_handle->mpu_handle->gyroscope_data,&(drone_handle->mpu_handle->mpu_data));
+		  mpu6050_read_accel(drone_handle->mpu_handle->accelerometer_data,&(drone_handle->mpu_handle->mpu_data));
+
+		  // calculate the pitch, roll angle
+		  AccRoll = atan2f(Ay, sqrtf(Ax * Ax + Az * Az))*180.0f/3.1415926f;
+
+		  AccPitch = -atan2f(Ax, sqrtf(Ay * Ay + Az * Az))*180.0f/3.1415926f;
+
+		  roll = Kalman_Update(&KalmanRoll,Gx,AccRoll,0.004f);
+		  pitch = Kalman_Update(&KalmanPitch, Gy,AccPitch,0.004f);
 	  }
 	  else if(sensor_fail_count >= 10)
 	  {
@@ -221,7 +236,7 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
 		  }
 		  break;
 	  }
-	  RC_command_to_angular_rate(channel, &rc_command);
+	  RC_command_to_angle(channel, &rc_command);
 	  //calculate error
 	  PID_calculate_error(drone_handle->mpu_handle->gyroscope_data, &rc_command,&pid_input);
 	  //calculate PID ouput and mix motor control signal

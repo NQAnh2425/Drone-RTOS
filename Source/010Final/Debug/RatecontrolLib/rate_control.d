@@ -31,7 +31,7 @@ RatecontrolLib/rate_control.o: ../RatecontrolLib/rate_control.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib/PID.h
+ C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/Common/Inc/PID.h
 ../RatecontrolLib/rate_control.h:
 C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib/SBUS.h:
 ../Core/Inc/main.h:
@@ -65,4 +65,4 @@ C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib/SBUS.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib/PID.h:
+C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/Common/Inc/PID.h:

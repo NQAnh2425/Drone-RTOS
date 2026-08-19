@@ -8,6 +8,7 @@
 #ifndef DRONE_H_
 #define DRONE_H_
 
+#include <math.h>
 #include "main.h"
 #include "Motor.h"
 #include "MPU6050.h"

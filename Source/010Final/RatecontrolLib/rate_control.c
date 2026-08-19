@@ -13,7 +13,6 @@
 RC_command_t rc_comand;
 
 
-
 static float constrain_float(float value, float min, float max)
 {
     if (value < min)
@@ -27,15 +26,17 @@ static float constrain_float(float value, float min, float max)
 
 void RC_command_to_angular_rate(uint16_t *channel, RC_command_t *rc_command)
 {
+#ifdef ANGULAR_RATE_MODE
     float pitch = constrain_float((float)channel[1], SBUS_CHANNEL_MIN,SBUS_CHANNEL_MAX);
 
     float roll = constrain_float((float)channel[0],  SBUS_CHANNEL_MIN, SBUS_CHANNEL_MAX);
 
     float throttle = constrain_float((float)channel[2], SBUS_CHANNEL_MIN,SBUS_CHANNEL_MAX);
-
+#endif
     float yaw = constrain_float((float)channel[3],SBUS_CHANNEL_MIN, SBUS_CHANNEL_MAX);
 
     /* Pitch deadband */
+#ifdef ANGULAR_RATE_MODE
     if ((pitch >= (SBUS_CHANNEL_CENTER - SBUS_DEADBAND)) &&(pitch <= (SBUS_CHANNEL_CENTER + SBUS_DEADBAND)))
     {
         rc_command->target_pitch_rate = 0.0f;
@@ -75,7 +76,7 @@ void RC_command_to_angular_rate(uint16_t *channel, RC_command_t *rc_command)
         (throttle - SBUS_CHANNEL_MIN) *
         100.0f /
         (SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN);
-
+#endif
     /* Yaw deadband */
     if (yaw >= (SBUS_CHANNEL_CENTER - SBUS_DEADBAND) &&
         yaw <= (SBUS_CHANNEL_CENTER + SBUS_DEADBAND))
@@ -98,6 +99,7 @@ void RC_command_to_angular_rate(uint16_t *channel, RC_command_t *rc_command)
     }
 
     /* Limit output */
+#ifdef ANGULAR_RATE_MODE
     rc_command->target_pitch_rate =
         constrain_float(rc_command->target_pitch_rate,
                         MIN_ANGULAR_RATE,
@@ -108,34 +110,17 @@ void RC_command_to_angular_rate(uint16_t *channel, RC_command_t *rc_command)
                         MIN_ANGULAR_RATE,
                         MAX_ANGULAR_RATE);
 
+    rc_command->target_throttle_rate =
+        constrain_float(rc_command->target_throttle_rate,
+                        0.0f,
+                        100.0f);
+#endif
     rc_command->target_yaw_rate =
         constrain_float(rc_command->target_yaw_rate,
                         MIN_ANGULAR_RATE,
                         MAX_ANGULAR_RATE);
 
-    rc_command->target_throttle_rate =
-        constrain_float(rc_command->target_throttle_rate,
-                        0.0f,
-                        100.0f);
 }
-
-
-void PID_calculate_error(float *mpu_gyro_data,RC_command_t *rc_command,PID_input_t *pid_input)
-{
-
-    /* Save previous error */
-    pid_input->prev_rate_error[0] = pid_input->rate_error[0];
-    pid_input->prev_rate_error[1] = pid_input->rate_error[1];
-    pid_input->prev_rate_error[2] = pid_input->rate_error[2];
-
-    /* Calculate rate error */
-    pid_input->rate_error[PID_ROLL] =  rc_command->target_roll_rate - mpu_gyro_data[0];
-
-    pid_input->rate_error[PID_PITCH] = rc_command->target_pitch_rate - mpu_gyro_data[1];
-
-    pid_input->rate_error[PID_YAW] = rc_command->target_yaw_rate - mpu_gyro_data[2];
-}
-
 
 
 float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt)
@@ -153,44 +138,24 @@ float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter,
     return P_term + I_term + D_term;
 }
 
-float calculate_thottle(float target_throttle_rate)
-{
-	return (target_throttle_rate*(MAX_PWM_MOTOR - 1000.0f) +1000.0f);
-}
-
-static inline uint16_t motor_limit(float value)
-{
-    if (value > MAX_PWM_MOTOR)
-        value = MAX_PWM_MOTOR;
-
-    if (value < MIN_PWM_MOTOR)
-        value = MIN_PWM_MOTOR;
-
-    return (uint16_t)value;
-}
 
 
-Motor_output_t motor_mixer(float throttle, float roll_output, float pitch_output, float yaw_output)
-{
-	Motor_output_t motor_output;
 
-    float motor1;
-    float motor2;
-    float motor3;
-    float motor4;
 
-    motor1 = throttle + roll_output + pitch_output - yaw_output;
 
-    motor2 = throttle - roll_output + pitch_output + yaw_output;
 
-    motor3 = throttle - roll_output - pitch_output - yaw_output;
 
-    motor4 = throttle + roll_output - pitch_output + yaw_output;
 
-    motor_output.motor1 = motor_limit(motor1);
-    motor_output.motor2 = motor_limit(motor2);
-    motor_output.motor3 = motor_limit(motor3);
-    motor_output.motor4 = motor_limit(motor4);
-    return motor_output;
-}
+
+
+
+
+
+
+
+
+
+
+
+
 

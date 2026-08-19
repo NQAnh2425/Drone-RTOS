@@ -1,0 +1,2 @@
+../AnglecontrolLib/anglemode_control.c:11:6:RC_command_to_angle	32	static
+../AnglecontrolLib/anglemode_control.c:91:6:PID_calculate_error_angle	32	static

@@ -1,0 +1,125 @@
+/*
+ * rate_control.c
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+
+#include "rate_control.h"
+
+
+
+RC_command_t rc_comand;
+
+
+static float constrain_float(float value, float min, float max)
+{
+    if (value < min)
+        return min;
+
+    if (value > max)
+        return max;
+
+    return value;
+}
+
+void RC_command_to_angular_rate(uint16_t *channel, RC_command_t *rc_command)
+{
+#ifdef ANGULAR_RATE_MODE
+    float pitch = constrain_float((float)channel[1], SBUS_CHANNEL_MIN,SBUS_CHANNEL_MAX);
+
+    float roll = constrain_float((float)channel[0],  SBUS_CHANNEL_MIN, SBUS_CHANNEL_MAX);
+
+    float throttle = constrain_float((float)channel[2], SBUS_CHANNEL_MIN,SBUS_CHANNEL_MAX);
+#endif
+    float yaw = constrain_float((float)channel[3],SBUS_CHANNEL_MIN, SBUS_CHANNEL_MAX);
+
+    /* Pitch deadband */
+#ifdef ANGULAR_RATE_MODE
+    if ((pitch >= (SBUS_CHANNEL_CENTER - SBUS_DEADBAND)) &&(pitch <= (SBUS_CHANNEL_CENTER + SBUS_DEADBAND)))
+    {
+        rc_command->target_pitch_rate = 0.0f;
+    }
+    else if (pitch < SBUS_CHANNEL_CENTER)
+    {
+        rc_command->target_pitch_rate =(pitch - SBUS_CHANNEL_CENTER) * (-MIN_ANGULAR_RATE)/(SBUS_CHANNEL_CENTER - SBUS_CHANNEL_MIN);
+    }
+    else
+    {
+        rc_command->target_pitch_rate =(pitch - SBUS_CHANNEL_CENTER) * MAX_ANGULAR_RATE/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_CENTER);
+    }
+
+    /* Roll deadband */
+    if (roll >= (SBUS_CHANNEL_CENTER - SBUS_DEADBAND) &&
+        roll <= (SBUS_CHANNEL_CENTER + SBUS_DEADBAND))
+    {
+        rc_command->target_roll_rate = 0.0f;
+    }
+    else if (roll < SBUS_CHANNEL_CENTER)
+    {
+        rc_command->target_roll_rate =
+            (roll - SBUS_CHANNEL_CENTER) *
+            (-MIN_ANGULAR_RATE) /
+            (SBUS_CHANNEL_CENTER - SBUS_CHANNEL_MIN);
+    }
+    else
+    {
+        rc_command->target_roll_rate =
+            (roll - SBUS_CHANNEL_CENTER) *
+            MAX_ANGULAR_RATE /
+            (SBUS_CHANNEL_MAX - SBUS_CHANNEL_CENTER);
+    }
+
+    /* Throttle */
+    rc_command->target_throttle_rate =
+        (throttle - SBUS_CHANNEL_MIN) *
+        100.0f /
+        (SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN);
+#endif
+    /* Yaw deadband */
+    if (yaw >= (SBUS_CHANNEL_CENTER - SBUS_DEADBAND) &&
+        yaw <= (SBUS_CHANNEL_CENTER + SBUS_DEADBAND))
+    {
+        rc_command->target_yaw_rate = 0.0f;
+    }
+    else if (yaw < SBUS_CHANNEL_CENTER)
+    {
+        rc_command->target_yaw_rate =
+            (yaw - SBUS_CHANNEL_CENTER) *
+            (-MIN_ANGULAR_RATE) /
+            (SBUS_CHANNEL_CENTER - SBUS_CHANNEL_MIN);
+    }
+    else
+    {
+        rc_command->target_yaw_rate =
+            (yaw - SBUS_CHANNEL_CENTER) *
+            MAX_ANGULAR_RATE /
+            (SBUS_CHANNEL_MAX - SBUS_CHANNEL_CENTER);
+    }
+
+    /* Limit output */
+#ifdef ANGULAR_RATE_MODE
+    rc_command->target_pitch_rate =
+        constrain_float(rc_command->target_pitch_rate,
+                        MIN_ANGULAR_RATE,
+                        MAX_ANGULAR_RATE);
+
+    rc_command->target_roll_rate =
+        constrain_float(rc_command->target_roll_rate,
+                        MIN_ANGULAR_RATE,
+                        MAX_ANGULAR_RATE);
+
+    rc_command->target_throttle_rate =
+        constrain_float(rc_command->target_throttle_rate,
+                        0.0f,
+                        100.0f);
+#endif
+    rc_command->target_yaw_rate =
+        constrain_float(rc_command->target_yaw_rate,
+                        MIN_ANGULAR_RATE,
+                        MAX_ANGULAR_RATE);
+
+}
+
+

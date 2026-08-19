@@ -15,8 +15,6 @@
 
 #define SBUS_FRAME_LEN_BYTE			((uint8_t) 25)
 
-
-
 #define SBUS_DEADBAND				10U
 
 #define SBUS_CHANNEL_NUM			16U
@@ -37,6 +35,9 @@
 #define SBUS_TIMEOUT_MS				100U
 #define SBUS_MAX_MISSED_FRAMES		3U
 
+#define CONSTRAIN(x, min, max) \
+    (((x) < (min)) ? (min) : \
+    (((x) > (max)) ? (max) : (x)))
 
 typedef enum
 {

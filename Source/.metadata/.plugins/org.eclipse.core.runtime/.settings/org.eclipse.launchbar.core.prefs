@@ -9,5 +9,5 @@ org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:003SBUS_read_data_f411\ Debug/a
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:006MPU_Interrupt\ Debug/activeLaunchMode=debug
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:007EstimateAngle-Kalmanfilter\ Debug/activeLaunchMode=run
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:008HMC5883L\ Debug/activeLaunchMode=debug
-org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:010Final\ Debug/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:010Final\ Debug/activeLaunchMode=debug
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UART_DMA\ Debug/activeLaunchMode=debug

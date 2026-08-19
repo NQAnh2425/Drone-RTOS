@@ -1,0 +1,42 @@
+/*
+ * rate_control.h
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+#ifndef RATE_CONTROL_H_
+#define RATE_CONTROL_H_
+
+#include "SBUS.h"
+#include "PID.h"
+
+
+#define MAX_ANGULAR_RATE		((float)50.0f)
+#define MIN_ANGULAR_RATE		((float)-50.0f)
+
+#define MAX_RC_CMD_ANGULAR_RATE		1736U
+#define MIN_RC_CMD_ANGULAR_RATE		140U
+#define MAX_RC_CMD_THROTTLE_RATE	1600U
+#define MIN_RC_CMD_THROTTLE_RATE	160U
+
+#define MAX_PWM_MOTOR				1530.0f
+#define MIN_PWM_MOTOR				1250.0f
+
+#define PID_ROLL   0
+#define PID_PITCH  1
+#define PID_YAW    2
+
+
+
+
+
+void RC_command_to_angular_rate(uint16_t * channel, RC_command_t *rc_command);
+void PID_calculate_error(float *mpu_gyro_data,RC_command_t *rc_command,PID_input_t *pid_input);
+
+float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt);
+float calculate_thottle(float target_throttle_rate);
+
+Motor_output_t motor_mixer(float throttle, float roll_output, float pitch_output, float yaw_output);
+
+#endif /* RATE_CONTROL_H_ */

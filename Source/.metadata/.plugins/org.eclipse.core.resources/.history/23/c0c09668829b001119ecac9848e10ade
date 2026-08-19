@@ -1,0 +1,65 @@
+/*
+ * MC7RE.h
+ *
+ *  Created on: Aug 1, 2026
+ *      Author: Admin
+ */
+
+#ifndef SBUS_H_
+#define SBUS_H_
+
+#include "main.h"
+#include "stdint.h"
+#include "stdbool.h"
+
+
+#define SBUS_FRAME_LEN_BYTE			((uint8_t) 25)
+
+#define SBUS_DEADBAND				10U
+
+#define SBUS_CHANNEL_NUM			16U
+#define SBUS_CHANNEL_MIN			276U
+#define SBUS_CHANNEL_CENTER			938U
+#define SBUS_CHANNEL_MAX			1600U
+
+#define SBUS_THROTTLE_ARM_MAX		190U
+#define SBUS_ROLL_ARM_MIN    		1650U
+#define SBUS_PITCH_ARM_MAX    		190U
+#define SBUS_YAW_ARM_MAX    		190U
+
+#define SBUS_PWM_MIN_US				1000U
+#define SBUS_PWM_CENTER_US			1500U
+#define SBUS_PWM_MAX_US				2000U
+
+/* Failsafe */
+#define SBUS_TIMEOUT_MS				100U
+#define SBUS_MAX_MISSED_FRAMES		3U
+
+#define CONSTRAIN(x)  (x)<SBUS_CHANNEL_MIN ? ((float)SBUS_CHANNEL_MIN):\
+		(((x)>SBUS_CHANNEL_MAX) ? ((float)SBUS_CHANNEL_MAX):(x))
+
+typedef enum
+{
+    SBUS_OK = 0,
+	SBUS_INIT_FAIL,
+	SBUS_FRAME_NOTFOND,
+    SBUS_ERR_FRAME_LOST,
+    SBUS_ERR_FAILSAFE,
+	SBUS_ERR_INVALID,
+} SBUS_status_t;
+
+
+SBUS_status_t SBUS_init(UART_HandleTypeDef *huart, uint8_t* SBUS_data_raw);
+SBUS_status_t SBUS_rx_callback(uint8_t *SBUS_data_raw);
+
+void SBUS_decode(uint8_t *buf, uint16_t *ch);
+
+SBUS_status_t SBUS_check_frame( uint8_t *buf);
+uint16_t SBUS_get_channel(uint8_t ch, uint16_t *channel);
+void SBUS_clear_old_data(uint8_t *SBUS_data_rx);
+
+
+
+
+
+#endif /* SBUS_H_ */

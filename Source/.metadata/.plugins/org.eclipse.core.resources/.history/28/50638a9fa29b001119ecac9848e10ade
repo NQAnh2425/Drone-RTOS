@@ -1,0 +1,32 @@
+/*
+ * anglemode_control.h
+ *
+ *  Created on: Aug 19, 2026
+ *      Author: Admin
+ */
+
+#ifndef ANGLEMODE_CONTROL_H_
+#define ANGLEMODE_CONTROL_H_
+
+
+#include "main.h"
+#include "SBUS.h"
+#include "PID.h"
+#include "MPU6050.h"
+#include "kalman.h"
+
+#define MAX_ANGLE		((float)50.0f)
+#define MIN_ANGLE		((float)-50.0f)
+
+#define MAX_RC_CMD_ANGLE_RATE		1736U
+#define MIN_RC_CMD_ANGLE_RATE		140U
+#define MAX_RC_CMD_THROTTLE_RATE	1600U
+#define MIN_RC_CMD_THROTTLE_RATE	160U
+
+
+void RC_command_to_angle(uint16_t *channel, RC_command_t *rc_command);
+
+
+
+
+#endif /* ANGLEMODE_CONTROL_H_ */
