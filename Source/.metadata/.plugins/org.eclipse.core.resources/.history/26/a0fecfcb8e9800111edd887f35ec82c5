@@ -1,0 +1,33 @@
+/*
+ * rate_control.h
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+#ifndef RATE_CONTROL_H_
+#define RATE_CONTROL_H_
+
+#include "SBUS.h"
+
+#define MAX_ANGULAR_RATE		((int8_t)45)
+#define MIN_ANGULAR_RATE		((int8_t)-45)
+
+
+typedef struct
+{
+	uint16_t target_pitch;
+	uint16_t target_roll;
+	uint16_t target_yaw;
+	uint16_t target_throttle;
+}RC_command_t;
+
+typedef struct
+{
+    float pitch_rate;
+    float roll_rate;
+    float yaw_rate;
+
+} Rate_Setpoint_t;
+
+#endif /* RATE_CONTROL_H_ */

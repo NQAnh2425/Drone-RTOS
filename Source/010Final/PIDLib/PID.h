@@ -9,7 +9,7 @@
 #define PID_H_
 
 
-#define CONTROL_LOOP_MS		4
+#define CONTROL_LOOP_SECOND		(0.004f)
 
 #include "main.h"
 
@@ -21,11 +21,9 @@ typedef struct
 }PID_parameter_t;
 
 
+
 uint8_t parse_pid(char *str, float *kp, float *ki, float *kd);
 void PID_setting();
-
-
-
 
 
 #endif /* PID_H_ */

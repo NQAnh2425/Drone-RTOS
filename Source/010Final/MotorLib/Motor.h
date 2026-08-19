@@ -40,6 +40,7 @@ void motor_init(MOTOR_Handle_t *motor_handle, TIM_HandleTypeDef *htim);
 
 uint16_t motor_get_pwm_channel(MOTOR_Handle_t *motor_handle);
 Motor_status_t motor_set_speed_channel ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed);
+Motor_status_t motor_set_speed_pwm_channel ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed_pwm);
 Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed);
 
 

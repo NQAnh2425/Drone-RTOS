@@ -10,6 +10,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include SBUSLib/subdir.mk
+-include RatecontrolLib/subdir.mk
 -include PIDLib/subdir.mk
 -include MotorLib/subdir.mk
 -include MPU6050Lib/subdir.mk

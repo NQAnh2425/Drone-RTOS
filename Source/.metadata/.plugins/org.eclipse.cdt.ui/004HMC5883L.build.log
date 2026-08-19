@@ -1,4 +1,4 @@
-10:02:13 **** Build of configuration Debug for project 004HMC5883L ****
+16:10:27 **** Incremental Build of configuration Debug for project 004HMC5883L ****
 make -j16 all 
 arm-none-eabi-size   004HMC5883L.elf 
    text	   data	    bss	    dec	    hex	filename
@@ -6,5 +6,5 @@ arm-none-eabi-size   004HMC5883L.elf
 Finished building: default.size.stdout
  
 
-10:02:13 Build Finished. 0 errors, 0 warnings. (took 184ms)
+16:10:27 Build Finished. 0 errors, 0 warnings. (took 189ms)
 

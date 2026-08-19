@@ -1,5 +1,7 @@
-../DroneLib/drone.c:17:11:drone_init	24	static
-../DroneLib/drone.c:33:8:drone_config	16	static
-../DroneLib/drone.c:54:8:drone_check_arm_signal	16	static
-../DroneLib/drone.c:89:8:drone_armed	16	static
-../DroneLib/drone.c:106:11:drone_soft_start	24	static
+../DroneLib/drone.c:29:11:drone_init	24	static
+../DroneLib/drone.c:45:8:drone_config	16	static
+../DroneLib/drone.c:64:16:drone_soft_start	24	static
+../DroneLib/drone.c:79:8:drone_check_arm_signal	16	static
+../DroneLib/drone.c:118:8:drone_armed	16	static
+../DroneLib/drone.c:138:8:drone_is_ready_to_fly	16	static
+../DroneLib/drone.c:178:8:drone_flying_loop	40	static

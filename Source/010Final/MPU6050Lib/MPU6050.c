@@ -142,9 +142,9 @@ void mpu6050_read_gyro(float *gyro_data, mpu6050_data *mpu6050_data)
 
 void mpu6050_read_accel(float *accel_data, mpu6050_data *mpu6050_data)
 {
-	accel_data[0] = ((float)(mpu6050_data->acel_x) / 16384.0f) - mpu6050_offset[0];
-	accel_data[1] = ((float)(mpu6050_data->acel_y) / 16384.0f) - mpu6050_offset[1];
-	accel_data[2] = ((float)(mpu6050_data->acel_z) / 16384.0f) - mpu6050_offset[2];
+	accel_data[0] = ((float)(mpu6050_data->acel_x) / 16384.0f);
+	accel_data[1] = ((float)(mpu6050_data->acel_y) / 16384.0f);
+	accel_data[2] = ((float)(mpu6050_data->acel_z) / 16384.0f);
 }
 
 

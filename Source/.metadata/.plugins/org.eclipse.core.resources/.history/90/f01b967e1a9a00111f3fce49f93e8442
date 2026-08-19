@@ -1,0 +1,24 @@
+/*
+ * rate_control.c
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+
+#include "rate_control.h"
+
+
+
+
+
+
+void RC_command_to_angular_rate(uint16_t * channel, RC_command_t *rc_command)
+{
+	rc_command->target_pitch_rate = ((float)channel[1] - 160)*(MAX_ANGULAR_RATE - MIN_ANGULAR_RATE)/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN) + MIN_ANGULAR_RATE;
+	rc_command->target_roll_rate = ((float)channel[0] - 160)*(MAX_ANGULAR_RATE - MIN_ANGULAR_RATE)/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN) + MIN_ANGULAR_RATE;
+	rc_command->target_throttle_rate = ((float)channel[2] - 160)*100/(MAX_RC_CMD_THROTTLE_RATE - MIN_RC_CMD_THROTTLE_RATE);
+	rc_command->target_yaw_rate = ((float)channel[3] - 160)*(MAX_ANGULAR_RATE - MIN_ANGULAR_RATE)/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN) + MIN_ANGULAR_RATE;
+}
+
+void

@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="ROLL"/>
+		<item key="selection" value="Roll"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="roll"/>
+			<item value="pid_parameter_pitch"/>
+			<item value="motor_output."/>
+			<item value="motor_output-&gt;"/>
+			<item value="Motor_limit"/>
 			<item value="Roll"/>
 			<item value="pitch"/>
 			<item value="."/>
@@ -18,12 +23,12 @@
 			<item value="xTaskNotify"/>
 			<item value="HMC5883L_Init"/>
 			<item value="&amp;huart2"/>
-			<item value="&amp;huart1"/>
-			<item value="regdata"/>
-			<item value="MemAddSize"/>
 		</list>
 		<list key="replacehistory">
 			<item value="yaw"/>
+			<item value="pid_parameter_roll"/>
+			<item value=""/>
+			<item value="motor_limit"/>
 			<item value="Yaw"/>
 			<item value="Roll"/>
 			<item value="roll"/>

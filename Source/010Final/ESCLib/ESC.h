@@ -22,7 +22,7 @@ typedef enum
 #define	ESC_OFFSET_CHANNEL_4	30
 
 #define ESC_PWM_MAX				1560
-#define ESC_PWM_MIN				1100
+#define ESC_PWM_MIN				1000
 
 esc_status_t esc_init(TIM_HandleTypeDef *htim);
 

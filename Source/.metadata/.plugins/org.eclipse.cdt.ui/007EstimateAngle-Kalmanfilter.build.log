@@ -1,4 +1,4 @@
-10:02:13 **** Build of configuration Debug for project 007EstimateAngle-Kalmanfilter ****
+16:10:28 **** Incremental Build of configuration Debug for project 007EstimateAngle-Kalmanfilter ****
 make -j16 all 
 arm-none-eabi-gcc "../MPU6050Lib/MPU6050.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/007EstimateAngle-Kalmanfilter/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/007EstimateAngle-Kalmanfilter/MPU6050Lib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"MPU6050Lib/MPU6050.d" -MT"MPU6050Lib/MPU6050.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "MPU6050Lib/MPU6050.o"
 ../MPU6050Lib/MPU6050.c:175:8: warning: return type defaults to 'int' [-Wimplicit-int]
@@ -50,5 +50,5 @@ arm-none-eabi-gcc "../MPU6050Lib/MPU6050.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEB
 make: *** [MPU6050Lib/subdir.mk:19: MPU6050Lib/MPU6050.o] Error 1
 "make -j16 all" terminated with exit code 2. Build might be incomplete.
 
-10:02:14 Build Failed. 3 errors, 8 warnings. (took 287ms)
+16:10:28 Build Failed. 3 errors, 8 warnings. (took 341ms)
 

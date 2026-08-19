@@ -1,0 +1,22 @@
+/*
+ * rate_control.c
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+
+#include "rate_control.h"
+
+
+
+
+
+
+void RC_command_to_angular_rate(uint16_t * channel, RC_command_t *rc_command)
+{
+	rc_command->target_pitch = channel[1];
+	rc_command->target_roll = channel[0];
+	rc_command->target_throttle = channel[2];
+	rc_command->target_yaw = channel[3];
+}

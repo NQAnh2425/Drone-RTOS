@@ -31,5 +31,6 @@ KalmanLib \
 MPU6050Lib \
 MotorLib \
 PIDLib \
+RatecontrolLib \
 SBUSLib \
 

@@ -28,6 +28,7 @@
 #include "ESC.h"
 #include "Motor.h"
 #include "PID.h"
+#include "rate_control.h"
 #include "drone.h"
 //#include "app_callback.h"
 
@@ -74,7 +75,7 @@ MPU6050_Handle_t	MPU6050_handle;
 /*=======================  SBUS global variables ==================== */
 uint8_t SBUS_raw_data_rx[SBUS_FRAME_LEN_BYTE];
 uint16_t channel[SBUS_CHANNEL_NUM];
-
+RC_command_t rc_command;
 
 /*=======================  Motor global variables ====================*/
 MOTOR_Handle_t motor_handle[4];
@@ -90,6 +91,8 @@ Drone_handle_t	drone_handle;
 PID_parameter_t pid_parameter_pitch;
 PID_parameter_t pid_parameter_roll;
 PID_parameter_t pid_parameter_yaw;
+
+PID_input_t		pid_input;
 uint8_t 		receive_flag;
 
 
@@ -136,12 +139,11 @@ void PID_setting(void)
     pid_setting_done = 0;
 
     current_pid = &pid_parameter_pitch;
-	LOG("=============================PID setting============================/n");
+	LOG("======================PID setting===================\n");
+
     LOG("Pitch P I D: ");
 
-    HAL_UART_Receive_IT(&huart2,
-                        &uart2_rx_byte,
-                        1);
+    HAL_UART_Receive_IT(&huart2,&uart2_rx_byte,1);
 }
 /* USER CODE END PFP */
 
@@ -220,7 +222,7 @@ int main(void)
   }
 
   /*============================= Drone configurate ==========================*/
-//  drone_config(&drone_handle);
+  drone_config(&drone_handle);
 
 
 
@@ -229,25 +231,44 @@ int main(void)
 
   /*============================= PID setting ================================*/
 
-  uint32_t current_tick = HAL_GetTick();
+  pid_parameter_pitch.p = 0.6f;
+  pid_parameter_pitch.i = 1.5f;
+  pid_parameter_pitch.d	= 0.03f;
+
+  pid_parameter_roll.p = 0.6f;
+  pid_parameter_roll.i = 1.5f;
+  pid_parameter_roll.d	= 0.03f;
+
+  pid_parameter_yaw.p = 2.0f;
+  pid_parameter_yaw.i = 12.0f;
+  pid_parameter_yaw.d	= 0.0f;
+
+
+  static uint32_t current_tick;
+  current_tick = HAL_GetTick();
   LOG("press user button to trigger PID setting \n");
   LOG("timeout: 5s\n");
   while((HAL_GetTick() - current_tick) <= 5000 )
   {
 	  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)==GPIO_PIN_SET)
 		  {
-		  HAL_UART_Receive_IT(&huart2, &uart2_rx_byte, 1);
 		  LOG("PID setting mode required detected!\n ");
 
 		  PID_setting();
 		  while(current_pid!=NULL);
 		  }
-	LOG("\nPID parameter:\n");
-	LOG("Pitch: %0.3f %0.3f %0.3f \n",pid_parameter_pitch.p,pid_parameter_pitch.i ,pid_parameter_pitch.d);
-	LOG("Roll : %0.3f %0.3f %0.3f \n",pid_parameter_roll.p,pid_parameter_roll.i ,pid_parameter_roll.d);
-	LOG("Yaw  : %0.3f %0.3f %0.3f \n",pid_parameter_yaw.p,pid_parameter_yaw.i ,pid_parameter_yaw.d);
   }
+LOG("\nPID parameter:\n");
+LOG("Pitch: %0.3f %0.3f %0.3f \n",pid_parameter_pitch.p,pid_parameter_pitch.i ,pid_parameter_pitch.d);
+LOG("Roll : %0.3f %0.3f %0.3f \n",pid_parameter_roll.p,pid_parameter_roll.i ,pid_parameter_roll.d);
+LOG("Yaw  : %0.3f %0.3f %0.3f \n",pid_parameter_yaw.p,pid_parameter_yaw.i ,pid_parameter_yaw.d);
 
+for(uint8_t i = 0; i<= 2; i++)
+{
+	pid_input.prev_Iterm[i] = 0;
+	pid_input.rate_error[i] = 0;
+	pid_input.prev_rate_error[i] = 0;
+}
 
 
 
@@ -275,6 +296,7 @@ int main(void)
   motor_id = MOTOR_1;
   mprint("motor %d in calibration\n", (motor_id+1));
 #endif
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -284,15 +306,31 @@ int main(void)
 
 		  switch (drone_handle.status)
 	{
+		  case(DRONE_INIT):
+				  break;
+
 		  case(DRONE_INIT_SUCCESS):
 			  if(receive_flag)
 			  {
+				  receive_flag = 0;
 				  drone_check_arm_signal(&drone_handle);
 				  break;
 			  }
+		  	  break;
 		  case(DRONE_ARMED):
 				  drone_armed(&drone_handle);
 			break;
+		  case(DRONE_READY_TO_FLY):
+				  drone_is_ready_to_fly(&drone_handle);
+				  current_tick = HAL_GetTick();
+		  case(DRONE_FLYING):
+				  if(HAL_GetTick() - current_tick > 4)
+				  {
+					  current_tick = HAL_GetTick();
+					  drone_flying_loop(&drone_handle);
+				  }
+			break;
+		  case(DRONE_ERROR):
 		  case(DRONE_FAILSAFE):
 			break;
 	  }

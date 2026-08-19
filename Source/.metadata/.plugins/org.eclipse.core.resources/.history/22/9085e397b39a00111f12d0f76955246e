@@ -1,0 +1,169 @@
+/*
+ * drone.c
+ *
+ *
+ *Contains drone driver definication functions
+ *
+ */
+
+#include "drone.h"
+
+
+
+extern uint8_t SBUS_raw_data_rx[SBUS_FRAME_LEN_BYTE];
+extern uint16_t channel[SBUS_CHANNEL_NUM];
+extern PID_parameter_t pid_parameter_pitch;
+extern PID_parameter_t pid_parameter_roll;
+extern PID_parameter_t pid_parameter_yaw;
+extern RC_command_t rc_command;
+extern PID_input_t	pid_input;
+
+static uint8_t sensor_fail_count = 0;
+
+  uint8_t drone_init( Drone_handle_t* drone_handle , MOTOR_Handle_t* motor_handle, MPU6050_Handle_t* mpu_handle)
+  {
+	if((drone_handle == NULL) || (motor_handle == NULL) || (mpu_handle == NULL))
+	{
+		return 0;
+	}
+	  drone_handle->drone_armed = false;
+	  drone_handle->error_code = ERROR_NONE;
+	  drone_handle->status = DRONE_INIT;
+	  drone_handle->pre_status = drone_handle->status;
+	  drone_handle->motor_handle = motor_handle;
+	  drone_handle->mpu_handle	= mpu_handle;
+	  return 1;
+  }
+
+
+  void drone_config(Drone_handle_t *drone_handle)
+  {
+	  // calibrate in progress indicate
+	  HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin,1);
+
+	  if (mpu6050_calibrate(drone_handle->mpu_handle,2000) != MPU6050_OK)
+	  {
+		  drone_handle->error_code = ERROR_MPU_UNSTABLE;
+		  drone_handle->status 	= DRONE_ERROR;
+		  Error_Handler();
+	  }
+
+	  // calibrate complete indicate
+	  HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin,0);
+	  drone_handle->drone_armed = true;
+	  drone_handle->pre_status = drone_handle->status;
+	  drone_handle->status 	= DRONE_INIT_SUCCESS;
+  }
+
+static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
+  {
+	  for(uint8_t i = 0; i <= (PWM_SOFT_START_MAX - ESC_PWM_MIN); i+=2)
+	  {
+		  motor_set_speed(&motor_handle[0], i);
+		  HAL_Delay(5);
+	  }
+
+	  return ((motor_get_pwm_channel(&motor_handle[0]) == PWM_SOFT_START_MAX) &&\
+			  (motor_get_pwm_channel(&motor_handle[1]) == PWM_SOFT_START_MAX) &&\
+			  (motor_get_pwm_channel(&motor_handle[2]) == PWM_SOFT_START_MAX) &&\
+			  (motor_get_pwm_channel(&motor_handle[3]) == PWM_SOFT_START_MAX));
+  }
+
+
+  void drone_check_arm_signal(Drone_handle_t *drone_handle)
+  {
+	  static uint8_t arm_delay;
+	  switch (SBUS_check_frame(SBUS_raw_data_rx))
+	  {
+	  case(SBUS_OK):
+			  if(drone_handle->pre_status != DRONE_INIT_SUCCESS)
+			  {
+				  arm_delay = ARM_DELAY_CYCLES;
+				  drone_handle->pre_status = drone_handle->status;
+			  }
+			  SBUS_decode(SBUS_raw_data_rx,channel);
+			  if( (channel[0] >= SBUS_ROLL_ARM_MIN)&& (channel[1] <= SBUS_PITCH_ARM_MAX) \
+			  && (channel[2] <= SBUS_THROTTLE_ARM_MAX)&&(channel[3]<= SBUS_YAW_ARM_MAX))
+			  {
+				  arm_delay--;
+				  if(arm_delay == 0)
+				  {
+					  drone_handle->pre_status = drone_handle->status;
+					  drone_handle->status = DRONE_ARMED;
+				  }
+			  }
+			  break;
+	  case(SBUS_FRAME_NOTFOND):
+	  case(SBUS_ERR_FRAME_LOST):
+	  case(SBUS_ERR_FAILSAFE):
+	  case(SBUS_ERR_INVALID):
+	  default:
+		  arm_delay = ARM_DELAY_CYCLES;
+		  break;
+	  }
+  }
+
+
+
+  void drone_armed(Drone_handle_t *drone_handle)
+  {
+	  //unlock motor control
+	  if(drone_soft_start(drone_handle->motor_handle) != 1)
+	  {
+		  drone_handle->drone_armed = false;
+		  return;
+	  }
+
+	  //start PID loop
+	  if(drone_handle->drone_armed)
+	  {
+		  //start control loop
+		  drone_handle->pre_status = drone_handle->status;
+		  drone_handle->status = DRONE_FLYING;
+	  }
+
+  }
+
+  void drone_flying_loop(Drone_handle_t *drone_handle)
+  {
+	  float pitch_output = 0.0f;
+	  float roll_output = 0.0f;
+	  float yaw_output = 0.0f;
+	  float throttle_output = 0.0f;
+	  Motor_output_t motor_output_pwm;
+	  //read calibrated sensor gyro data
+	  if(mpu6050_read_data(drone_handle->mpu_handle->hi2c, MPU6050_ADDR, &(drone_handle->mpu_handle->mpu_data)) == MPU6050_OK)
+	  {
+		  mpu6050_read_gyro(&(drone_handle->mpu_handle->gyroscope_data),&(drone_handle->mpu_handle->mpu_data));
+	  }
+	  else if(sensor_fail_count >= 10)
+	  {
+		  drone_handle->pre_status = drone_handle->status;
+		  drone_handle->status  = DRONE_FAILSAFE;
+		  return;
+	  }
+	  else
+	  {
+		  sensor_fail_count++;
+	  }
+	  //read RC command
+	  RC_command_to_angular_rate(channel, &rc_command);
+	  //calculate error
+	  PID_calculate_error(drone_handle->mpu_handle->gyroscope_data, &rc_command,&pid_input);
+	  //calculate PID ouput and mix motor control signal
+	  pitch_output	= PID_calculate_rate(&pid_input, &pid_parameter_pitch,PID_PITCH , CONTROL_LOOP_SECOND);
+	  roll_output	= PID_calculate_rate(&pid_input, &pid_parameter_roll,PID_ROLL , CONTROL_LOOP_SECOND);
+	  yaw_output	= PID_calculate_rate(&pid_input, &pid_parameter_yaw,PID_YAW , CONTROL_LOOP_SECOND);
+
+	  throttle_output = rc_command.target_throttle_rate*(1530.0f - 1060.0f)/100 + 1060.0f;
+	  motor_output_pwm = motor_mixer(throttle_output, roll_output, pitch_output, yaw_output);
+
+	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[0]),motor_output_pwm.motor1);
+	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[1]),motor_outpsut_pwm.motor2);
+	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[2]),motor_output_pwm.motor3);
+	  motor_set_speed_pwm_channel(&(drone_handle->motor_handle[3]),motor_output_pwm.motor4);
+	  //set cutoff throttle to stop motor
+  }
+
+
+

@@ -1,0 +1,61 @@
+/*
+ * rate_control.h
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+#ifndef RATE_CONTROL_H_
+#define RATE_CONTROL_H_
+
+#include "SBUS.h"
+#include "PID.h"
+
+
+#define MAX_ANGULAR_RATE		((int8_t)50)
+#define MIN_ANGULAR_RATE		((int8_t)-50)
+
+#define MAX_RC_CMD_ANGULAR_RATE		1736U
+#define MIN_RC_CMD_ANGULAR_RATE		140U
+#define MAX_RC_CMD_THROTTLE_RATE	1600U
+#define MIN_RC_CMD_THROTTLE_RATE	160U
+
+#define MAX_PWM_MOTOR				1530.0f
+#define MIN_PWM_MOTOR				1250.0f
+
+#define PID_ROLL   0
+#define PID_PITCH  1
+#define PID_YAW    2
+
+typedef struct
+{
+	float target_pitch_rate; // channel 2 -> channel[1]
+	float target_roll_rate;	// channel 1 -> chanel[0]
+	float target_yaw_rate;	// channel 4 -> channel[3]
+	float target_throttle_rate; // channel 3 -> channel[2]
+}RC_command_t;
+
+
+typedef struct
+{
+    uint16_t motor1;
+    uint16_t motor2;
+    uint16_t motor3;
+    uint16_t motor4;
+} Motor_output_t;
+
+typedef struct
+{
+	float rate_error[3];
+	float prev_rate_error[3];
+	float prev_Iterm[3];
+}PID_input_t;
+
+void RC_command_to_angular_rate(uint16_t * channel, RC_command_t *rc_command);
+void PID_calculate_error(float *mpu_gyro_data,RC_command_t *rc_command,PID_input_t *pid_input);
+float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt);
+float calculate_thottle(float target_throttle_rate);
+
+void motor_mixer(float throttle, float roll_output, float pitch_output, float yaw_output, Motor_output_t *motor_output);
+
+#endif /* RATE_CONTROL_H_ */

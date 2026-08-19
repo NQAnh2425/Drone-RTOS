@@ -1,0 +1,110 @@
+/*
+ * rate_control.c
+ *
+ *  Created on: Aug 15, 2026
+ *      Author: Admin
+ */
+
+
+#include "rate_control.h"
+
+#define PID_ROLL   0
+#define PID_PITCH  1
+#define PID_YAW    2
+
+
+
+
+void RC_command_to_angular_rate(uint16_t * channel, RC_command_t *rc_command)
+{
+	rc_command->target_pitch_rate = ((float)channel[1] - 160)*(MAX_ANGULAR_RATE - MIN_ANGULAR_RATE)/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN) + MIN_ANGULAR_RATE;
+	rc_command->target_roll_rate = ((float)channel[0] - 160)*(MAX_ANGULAR_RATE - MIN_ANGULAR_RATE)/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN) + MIN_ANGULAR_RATE;
+	rc_command->target_throttle_rate = ((float)channel[2] - 160)*100/(MAX_RC_CMD_THROTTLE_RATE - MIN_RC_CMD_THROTTLE_RATE);
+	rc_command->target_yaw_rate = ((float)channel[3] - 160)*(MAX_ANGULAR_RATE - MIN_ANGULAR_RATE)/(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN) + MIN_ANGULAR_RATE;
+}
+
+typedef struct
+{
+	float rate_error[3];
+	float prev_rate_error[3];
+	float prev_Iterm[3];
+}PID_input_t;
+
+
+void PID_calculate_error(float *mpu_gyro_data,RC_command_t *rc_command,PID_input_t *pid_input)
+{
+
+    /* Save previous error */
+    pid_input->prev_rate_error[0] = pid_input->rate_error[0];
+    pid_input->prev_rate_error[1] = pid_input->rate_error[1];
+    pid_input->prev_rate_error[2] = pid_input->rate_error[2];
+
+    /* Calculate rate error */
+    pid_input->rate_error[PID_ROLL] =  rc_command->target_roll_rate - mpu_gyro_data[0];
+
+    pid_input->rate_error[PID_PITCH] = rc_command->target_pitch_rate - mpu_gyro_data[1];
+
+    pid_input->rate_error[PID_YAW] = rc_command->target_yaw_rate - mpu_gyro_data[2];
+}
+
+
+
+float PID_calculate_rate(PID_input_t *pid_input, PID_parameter_t *pid_parameter, uint8_t axis, float dt)
+{
+    float error = pid_input->rate_error[axis];
+
+    float P_term = pid_parameter->p * error;
+
+    float I_term = pid_input->prev_Iterm[axis] + pid_parameter->i * error * dt;
+
+    float D_term = pid_parameter->d * (error - pid_input->prev_rate_error[axis])/ dt;
+
+    pid_input->prev_Iterm[axis] = I_term;
+
+    return P_term + I_term + D_term;
+}
+
+
+
+typedef struct
+{
+    uint16_t motor1;
+    uint16_t motor2;
+    uint16_t motor3;
+    uint16_t motor4;
+} Motor_output_t;
+
+
+static inline uint16_t Motor_limit(float value)
+{
+    if (value > MAX_PWM_MOTOR)
+        value = MAX_PWM_MOTOR;
+
+    if (value < MIN_PWM_MOTOR)
+        value = MAX_PWM_MOTOR;
+
+    return (uint16_t)value;
+}
+
+
+void Motor_mixer(float throttle, float roll_output, float pitch_output, float yaw_output, Motor_output_t *motor_output)
+{
+    float motor1;
+    float motor2;
+    float motor3;
+    float motor4;
+
+    motor1 = throttle + roll_output + pitch_output - yaw_output;
+
+    motor2 = throttle - roll_output + pitch_output + yaw_output;
+
+    motor3 = throttle - roll_output - pitch_output - yaw_output;
+
+    motor4 = throttle + roll_output - pitch_output + yaw_output;
+
+    motor_output->motor1 = Motor_limit(motor1);
+    motor_output->motor2 = Motor_limit(motor2);
+    motor_output->motor3 = Motor_limit(motor3);
+    motor_output->motor4 = Motor_limit(motor4);
+}
+

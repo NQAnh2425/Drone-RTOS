@@ -39,7 +39,14 @@ Motor_status_t motor_set_speed_channel ( MOTOR_Handle_t *motor_handle ,uint16_t 
 	return MOTOR_OK;
 }
 
+Motor_status_t motor_set_speed_pwm_channel ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed_pwm)
+{
 
+	if(esc_set_channel(motor_handle->htim, (uint32_t)motor_handle->tim_channel ,motor_speed_pwm) != ESC_OK)
+	return MOTOR_FAIL;
+
+	return MOTOR_OK;
+}
 
 Motor_status_t motor_set_speed ( MOTOR_Handle_t *motor_handle ,uint16_t motor_speed)
 {
