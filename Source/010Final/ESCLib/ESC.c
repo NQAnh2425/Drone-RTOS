@@ -37,7 +37,7 @@ esc_status_t esc_set_channel(TIM_HandleTypeDef *htim, uint32_t tim_channel , uin
 		}
 	case(TIM_CHANNEL_3):
 		{
-			__HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_3, set_value - 30);
+			__HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_3, set_value);
 			break;
 		}
 	case(TIM_CHANNEL_4):

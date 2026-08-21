@@ -222,7 +222,7 @@ int main(void)
   }
 
   /*============================= Drone configurate ==========================*/
-  drone_config(&drone_handle);
+ drone_config(&drone_handle);
 
 
 
@@ -231,16 +231,16 @@ int main(void)
 
   /*============================= PID setting ================================*/
 
-  pid_parameter_pitch.p = 0.6f;
-  pid_parameter_pitch.i = 1.5f;
-  pid_parameter_pitch.d	= 0.03f;
+  pid_parameter_pitch.p = 0.001f;
+  pid_parameter_pitch.i = 0.001f;
+  pid_parameter_pitch.d	= 0.0001f;
 
-  pid_parameter_roll.p = 0.6f;
-  pid_parameter_roll.i = 1.5f;
-  pid_parameter_roll.d	= 0.03f;
+  pid_parameter_roll.p = 0.001f;
+  pid_parameter_roll.i = 0.001f;
+  pid_parameter_roll.d	= 0.0001f;
 
-  pid_parameter_yaw.p = 2.0f;
-  pid_parameter_yaw.i = 12.0f;
+  pid_parameter_yaw.p = 0.001f;
+  pid_parameter_yaw.i = 0.001f;
   pid_parameter_yaw.d	= 0.0f;
 
 

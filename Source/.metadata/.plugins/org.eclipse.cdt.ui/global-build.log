@@ -1,4 +1,4 @@
-16:45:53 **** Incremental Build of configuration Debug for project 010Final ****
+19:13:33 **** Incremental Build of configuration Debug for project 010Final ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F405xx -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/RatecontrolLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "010Final.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
@@ -7,79 +7,15 @@ Finished building target: 010Final.elf
 arm-none-eabi-size   010Final.elf 
 arm-none-eabi-objdump -h -S  010Final.elf  > "010Final.list"
    text	   data	    bss	    dec	    hex	filename
-  48232	    476	   2780	  51488	   c920	010Final.elf
+  48528	    476	   2780	  51784	   ca48	010Final.elf
 Finished building: default.size.stdout
  
 Finished building: 010Final.list
  
-16:46:16 **** Incremental Build of configuration Debug for project 010Final ****
+19:14:09 **** Incremental Build of configuration Debug for project 010Final ****
 make -j16 all 
 arm-none-eabi-size   010Final.elf 
    text	   data	    bss	    dec	    hex	filename
-  48232	    476	   2780	  51488	   c920	010Final.elf
-Finished building: default.size.stdout
- 
-16:49:29 **** Incremental Build of configuration Debug for project 010Final ****
-make -j16 all 
-arm-none-eabi-gcc "../DroneLib/drone.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F405xx -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/RatecontrolLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"DroneLib/drone.d" -MT"DroneLib/drone.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "DroneLib/drone.o"
-../DroneLib/drone.c: In function 'drone_config':
-../DroneLib/drone.c:50:15: warning: implicit declaration of function 'mpu6050_calibrate' [-Wimplicit-function-declaration]
-   50 |           if (mpu6050_calibrate(drone_handle->mpu_handle,2000) != MPU6050_OK)
-      |               ^~~~~~~~~~~~~~~~~
-../DroneLib/drone.c: In function 'drone_flying_loop':
-../DroneLib/drone.c:188:37: warning: passing argument 1 of 'mpu6050_read_gyro' from incompatible pointer type [-Wincompatible-pointer-types]
-  188 |                   mpu6050_read_gyro(&(drone_handle->mpu_handle->gyroscope_data),&(drone_handle->mpu_handle->mpu_data));
-      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                                     |
-      |                                     float (*)[3]
-In file included from ../DroneLib/drone.h:13,
-                 from ../DroneLib/drone.c:9:
-C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib/MPU6050.h:91:31: note: expected 'float *' but argument is of type 'float (*)[3]'
-   91 | void mpu6050_read_gyro(float *gyro_data, mpu6050_data *mpu6050_data);
-      |                        ~~~~~~~^~~~~~~~~
-arm-none-eabi-gcc -o "010Final.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: 010Final.elf
- 
-arm-none-eabi-size   010Final.elf 
-arm-none-eabi-objdump -h -S  010Final.elf  > "010Final.list"
-   text	   data	    bss	    dec	    hex	filename
-  48232	    476	   2780	  51488	   c920	010Final.elf
-Finished building: default.size.stdout
- 
-Finished building: 010Final.list
- 
-17:19:30 **** Incremental Build of configuration Debug for project 010Final ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F405xx -c -I../Core/Inc -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/RatecontrolLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/PIDLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/DroneLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MotorLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/ESCLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/KalmanLib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/MPU6050Lib" -I"C:/Users/Admin/Documents/GitHub/Drone-RTOS/Source/010Final/SBUSLib" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "010Final.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Admin\Documents\GitHub\Drone-RTOS\Source\010Final\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="010Final.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: 010Final.elf
- 
-arm-none-eabi-size   010Final.elf 
-arm-none-eabi-objdump -h -S  010Final.elf  > "010Final.list"
-   text	   data	    bss	    dec	    hex	filename
-  48232	    476	   2780	  51488	   c920	010Final.elf
-Finished building: default.size.stdout
- 
-Finished building: 010Final.list
- 
-18:17:42 **** Incremental Build of configuration Debug for project 002ESC_Test ****
-make -j16 all 
-arm-none-eabi-size   002ESC_Test.elf 
-   text	   data	    bss	    dec	    hex	filename
-   8972	     20	   1644	  10636	   298c	002ESC_Test.elf
-Finished building: default.size.stdout
- 
-18:18:35 **** Incremental Build of configuration Debug for project 010Final ****
-make -j16 all 
-arm-none-eabi-size   010Final.elf 
-   text	   data	    bss	    dec	    hex	filename
-  48232	    476	   2780	  51488	   c920	010Final.elf
-Finished building: default.size.stdout
- 
-08:39:54 **** Incremental Build of configuration Debug for project 010Final ****
-make -j16 all 
-arm-none-eabi-size   010Final.elf 
-   text	   data	    bss	    dec	    hex	filename
-  48232	    476	   2780	  51488	   c920	010Final.elf
+  48528	    476	   2780	  51784	   ca48	010Final.elf
 Finished building: default.size.stdout
  

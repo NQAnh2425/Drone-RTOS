@@ -63,10 +63,10 @@ static uint8_t RC_fail_count = 0;
 
 static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
   {
-	  for(uint8_t i = 0; i <= (PWM_SOFT_START_MAX - ESC_PWM_MIN); i+=2)
+	  for(uint8_t i = 0; i <= (PWM_SOFT_START_MAX - ESC_PWM_MIN); i+=1)
 	  {
 		  motor_set_speed(&motor_handle[0], i);
-		  HAL_Delay(5);
+		  HAL_Delay(10);
 	  }
 
 	  return ((motor_get_pwm_channel(&motor_handle[0]) == PWM_SOFT_START_MAX) &&\
@@ -118,6 +118,14 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
   void drone_armed(Drone_handle_t *drone_handle)
   {
 	  //unlock motor control
+	  uint32_t _current_tick = HAL_GetTick();
+	  motor_set_speed(drone_handle->motor_handle,0);
+
+	  while(HAL_GetTick() < _current_tick + 5000)
+	  {
+		  ;
+	  }
+	  //soft start
 	  if(drone_soft_start(drone_handle->motor_handle) != 1)
 	  {
 		  drone_handle->drone_armed = false;
@@ -186,6 +194,9 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
 	  if(mpu6050_read_data(drone_handle->mpu_handle->hi2c, MPU6050_ADDR, &(drone_handle->mpu_handle->mpu_data)) == MPU6050_OK)
 	  {
 		  mpu6050_read_gyro(&(drone_handle->mpu_handle->gyroscope_data),&(drone_handle->mpu_handle->mpu_data));
+		  LOG("\n gyro_x %0.3f\n",(drone_handle->mpu_handle->gyroscope_data[0]));
+		  LOG("\n gyro_y %0.3f\n",(drone_handle->mpu_handle->gyroscope_data[1]));
+		  LOG("\n gyro_z %0.3f\n",(drone_handle->mpu_handle->gyroscope_data[2]));
 	  }
 	  else if(sensor_fail_count >= 10)
 	  {
@@ -210,7 +221,8 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
 	  case(SBUS_ERR_FAILSAFE):
 	  case(SBUS_ERR_INVALID):
 	  default:
-		  if(RC_fail_count >= 15)
+		  if(RC_fail_count >=
+				  15)
 		  {
 			  drone_handle->pre_status = drone_handle->status;
 			  drone_handle->status	= DRONE_FAILSAFE;
@@ -243,6 +255,11 @@ static uint8_t drone_soft_start(MOTOR_Handle_t *motor_handle)
 	  motor2_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[1]));
 	  motor3_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[2]));
 	  motor4_pwm = motor_get_pwm_channel(&(drone_handle->motor_handle[3]));
+
+	  LOG("\nmotor1 : %d pwm\n", motor1_pwm);
+	  LOG("motor2 : %d pwm\n", motor2_pwm);
+	  LOG("motor3 : %d pwm\n", motor3_pwm);
+	  LOG("motor4 : %d pwm\n", motor4_pwm);
 	  //set cutoff throttle to stop motor
   }
 
